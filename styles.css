@@ -1,0 +1,402 @@
+/* Kepler 282C — Tema Grimdark Tecno‑Medieval */
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=UnifrakturCook:wght@700&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root{
+  --bg: #05070b;           /* noche profunda tecnológica */
+  --panel: #0a0f16;        /* panel oscuro frío */
+  --panel-2: #070b12;      /* panel más profundo */
+  --text: #e6f2ff;         /* blanco frío */
+  --muted: #91a3bf;        /* acero azulado */
+  --accent: #3ef3ff;       /* cian neón */
+  --accent-2: #8e5bff;     /* violeta arcano */
+  --ok: #00e18c;           /* verde bio */
+  --warn: #ffb86b;         /* ámbar neón */
+  --border: #1b2a3d;       /* azul pizarra */
+  --border-2: #2b466b;     /* azul profundo (hover) */
+  --card-pad: 16px;
+  /* tonos ruina/desierto (overlays cálidos, mantienen acentos actuales) */
+  --sand-1: #8a6a3e;
+  --sand-2: #5e4a2e;
+  --sand-3: #b79e71;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Rajdhani', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+  background:
+    radial-gradient(1200px 800px at 85% -10%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 55%),
+    radial-gradient(1000px 700px at 10% 110%, color-mix(in srgb, var(--accent-2) 14%, transparent) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent) 3%, transparent) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, var(--panel-2) 0%, var(--bg) 100%);
+  color: var(--text);
+}
+
+/* Haze desértico + viñeta y arañazos finos */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background:
+    radial-gradient(1200px 600px at 50% 110%, color-mix(in srgb, var(--sand-1) 20%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 0 65%, color-mix(in srgb, var(--sand-2) 6%, transparent) 65% 100%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--sand-1) 2.2%, transparent) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--sand-2) 1.8%, transparent) 0 1px, transparent 1px 4px);
+  mix-blend-mode: soft-light; opacity:.22;
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background:
+    radial-gradient(1200px 800px at 50% -200px, transparent 40%, rgba(0,0,0,.35) 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.02) 0 1px, transparent 1px 9px);
+  mix-blend-mode: multiply; opacity:.22;
+}
+
+.page-header{
+  padding: 32px 20px 10px;
+  text-align:center;
+  position: relative;
+}
+/* Brand banner (logo encabezado) */
+.brand-wrap{ display:flex; justify-content:center; align-items:center; margin:0 auto 8px; position:relative; }
+.brand-wrap::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: var(--pattern-global, none);
+  mix-blend-mode: screen; opacity:.12;
+}
+.brand-logo{ width: clamp(180px, 24vw, 360px); height:auto; display:block; object-fit:contain;
+  filter:
+    drop-shadow(0 10px 22px rgba(0,0,0,.45))
+    drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 18%, transparent))
+    drop-shadow(0 0 20px color-mix(in srgb, var(--accent-2) 12%, transparent));
+}
+@media (max-width: 720px){ .brand-logo{ width: clamp(160px, 38vw, 280px); } }
+.page-header h1{
+  margin:0 0 6px;
+  font-family: 'UnifrakturCook', 'IM Fell English', serif;
+  font-weight: 700;
+  letter-spacing: .6px;
+  color: var(--text);
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.6),
+    0 0 14px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 0 28px color-mix(in srgb, var(--accent-2) 30%, transparent);
+}
+.subtitle{
+  margin:0;
+  color: var(--muted);
+  font-style: italic;
+}
+.page-header::after{
+  content: "";
+  display:block;
+  height:1px;
+  margin:12px auto 0;
+  max-width: 840px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 50%, transparent), color-mix(in srgb, var(--accent-2) 35%, transparent), transparent);
+  opacity:.6;
+}
+
+main{padding: 10px 20px 40px; max-width: 1400px; margin: 0 auto;}
+.race-section{}
+.menu-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:20px; }
+.menu-card{ border:1px solid var(--border); background:
+  radial-gradient(180px 140px at 20% 0%, color-mix(in srgb, var(--sand-1) 6%, transparent) 0%, transparent 70%),
+  repeating-linear-gradient(0deg, color-mix(in srgb, var(--sand-2) 6%, transparent) 0 1px, transparent 1px 9px),
+  linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  color:var(--text); border-radius:14px; padding:18px; text-align:left; cursor:pointer; box-shadow: inset 0 1px 0 color-mix(in srgb, var(--sand-1) 14%, transparent);
+}
+.menu-card:hover{ border-color:var(--accent-2); box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 10px 28px rgba(0,0,0,.6), 0 0 20px color-mix(in srgb, var(--accent) 18%, transparent) }
+.saved-panel{ margin-top:20px; }
+.saved-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.saved-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:8px 10px; }
+.saved-left{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.saved-name{ font-weight:600 }
+.saved-meta{ color:var(--muted) }
+.actions-bar{ margin-top:14px; display:flex; justify-content:flex-end; gap:10px; }
+.race-grid{
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 16px;
+}
+/* Atributos grid: 2 columnas por legibilidad */
+#attr-grid{ grid-template-columns: repeat(2, 1fr); }
+#calc-grid{ grid-template-columns: repeat(2, 1fr); }
+.health-flex{ display:flex; align-items:center; gap:12px; }
+.inline-controls{ background:
+  radial-gradient(140px 120px at 18% 0%, color-mix(in srgb, var(--sand-1) 6%, transparent) 0%, transparent 70%),
+  linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border:1px solid var(--border); border-radius:12px; padding:10px; min-width:220px; }
+.inline-controls .hint{ color:var(--muted); margin-top:6px }
+
+.back-btn{
+  position: absolute; left: 20px; top: 24px;
+  appearance:none; border:1px solid var(--border); border-radius:10px; padding:8px 12px; cursor:pointer;
+  background: var(--panel); color: var(--muted);
+  overflow:hidden; z-index: 10;
+}
+.back-btn::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background: var(--pattern-global, none);
+  opacity:.12; mix-blend-mode: screen;
+}
+.back-btn:hover{ border-color:var(--border-2); color:#fff1d6 }
+
+.race-card{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+  gap:10px;
+  width:100%;
+  border: 1px solid var(--border-local, var(--border));
+  background:
+    radial-gradient(200px 160px at 20% 0%, color-mix(in srgb, var(--sand-1) 6%, transparent) 0%, transparent 70%),
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--sand-2) 5%, transparent) 0 1px, transparent 1px 10px),
+    linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  color: var(--text);
+  padding: var(--card-pad);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  overflow: hidden;
+  height: 100%;
+}
+.race-card:hover{
+  transform: translateY(-2px);
+  border-color: var(--accent2-local, var(--accent-2));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-local, var(--accent)) 35%, transparent),
+    0 10px 28px rgba(0,0,0,.6),
+    0 0 24px color-mix(in srgb, var(--accent-local, var(--accent)) 18%, transparent);
+}
+.race-card[aria-checked="true"]{
+  border-color: var(--accent-local, var(--accent));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-local, var(--accent)) 35%, transparent);
+}
+
+/* Imágenes responsivas y tamaño consistente para tarjetas de raza */
+img{ max-width:100%; height:auto; display:block; }
+.race-art{ width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:10px; background:var(--bg); border:1px solid var(--border-local, var(--border)); margin:0; }
+.race-art img{ width:100%; height:100%; object-fit:contain; }
+.race-name{
+  margin:0;
+  font-size: 1.15rem;
+  font-family: 'IM Fell English', Georgia, serif;
+}
+.race-name::after{
+  content:""; display:block; height:2px; margin-top:4px;
+  background:
+    linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent-local, var(--accent)) 70%, transparent) 20%, color-mix(in srgb, var(--accent2-local, var(--accent-2)) 50%, transparent) 80%, transparent),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent-local, var(--accent)) 40%, transparent) 0 6px, transparent 6px 12px);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent-local, var(--accent)) 40%, transparent));
+  opacity:.85;
+}
+.race-desc{
+  margin:0;
+  color: var(--muted);
+  line-height: 1.25rem;
+}
+
+.selection-bar{
+  margin-top: 18px;
+  padding: 12px 14px;
+  background:
+    radial-gradient(180px 140px at 20% 0%, color-mix(in srgb, var(--sand-1) 6%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display:flex; align-items:center; justify-content: space-between;
+  gap: 12px;
+  position: relative; overflow: hidden;
+}
+.selection-bar::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: var(--pattern-global, none);
+  opacity:.1; mix-blend-mode: screen;
+}
+#selection-text{color: var(--muted)}
+.continue-btn{
+  appearance:none; border:1px solid var(--border-2); border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #001018;
+  text-shadow: 0 1px 0 rgba(255,255,255,.25);
+  box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 10px color-mix(in srgb, var(--accent) 24%, transparent);
+  transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+  position: relative; overflow: hidden;
+}
+.continue-btn::before{
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+  background: var(--pattern-global, none);
+  opacity:.14; mix-blend-mode: screen;
+}
+.continue-btn[disabled]{
+  filter: grayscale(.6) opacity(.6);
+  cursor: not-allowed;
+}
+.continue-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.6), 0 0 18px color-mix(in srgb, var(--accent) 32%, transparent);
+  animation: pulseGlow 1.6s ease-in-out infinite;
+}
+@keyframes pulseGlow{
+  0%{ box-shadow: 0 6px 18px rgba(0,0,0,.6), 0 0 10px color-mix(in srgb, var(--accent) 24%, transparent); }
+  50%{ box-shadow: 0 8px 24px rgba(0,0,0,.65), 0 0 22px color-mix(in srgb, var(--accent) 40%, transparent); }
+  100%{ box-shadow: 0 6px 18px rgba(0,0,0,.6), 0 0 10px color-mix(in srgb, var(--accent) 24%, transparent); }
+}
+
+.sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* Virtudes layout */
+.virtues-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top: 14px; }
+.virtue-col{ background:
+  radial-gradient(160px 130px at 18% 0%, color-mix(in srgb, var(--sand-1) 7%, transparent) 0%, transparent 70%),
+  repeating-linear-gradient(0deg, color-mix(in srgb, var(--sand-2) 5%, transparent) 0 1px, transparent 1px 10px),
+  linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border:1px solid var(--border); border-radius:12px; padding:12px; }
+.virtue-col h3{ margin:0 0 8px; font-family:'IM Fell English', Georgia, serif; }
+/* Grilla para tarjetas de virtudes lunares (se adapta al ancho) */
+.cards-grid{ display:grid; grid-template-columns: repeat(2, minmax(520px, 1fr)); gap:18px; align-items:stretch; }
+.cards-grid .race-card{ padding: var(--card-pad); }
+.virtue-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed color-mix(in srgb, var(--border) 70%, transparent); }
+.virtue-row:last-child{ border-bottom:none; }
+.virtue-label{ color: var(--text); font-size:.95rem; line-height:1.2rem; }
+.stepper{ display:flex; align-items:center; gap:6px; }
+.step{ appearance:none; border:1px solid var(--border); background:var(--panel); color:var(--text); border-radius:8px; width:28px; height:28px; cursor:pointer; }
+.step:hover{ border-color:var(--border-2) }
+.step-input{ width:46px; text-align:center; background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:4px; }
+.note-input{ background:var(--bg); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:6px 8px; min-width:140px; }
+.virt-long{ color: var(--muted); white-space: pre-wrap; line-height:1.25rem; }
+
+/* ——— Tecno-medieval ornaments (rúnico + circuito) ——— */
+.menu-card, .race-card, .virtue-col{ position: relative; }
+
+/* Circuit grid + rune sigil overlay */
+.menu-card::before, .race-card::before, .virtue-col::before{
+  content:"";
+  position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
+  background:
+    /* halo amplio */
+    radial-gradient(220px 220px at calc(100% - 64px) 64px, color-mix(in srgb, var(--accent-local, var(--accent)) 18%, transparent) 0%, transparent 60%),
+    /* anillo brillante */
+    radial-gradient(220px 220px at calc(100% - 64px) 64px, transparent 54%, color-mix(in srgb, var(--accent-local, var(--accent)) 30%, transparent) 56%, transparent 60%),
+    /* segmentos rúnicos */
+    repeating-conic-gradient(from 0deg at calc(100% - 64px) 64px,
+      color-mix(in srgb, var(--accent-local, var(--accent)) 12%, transparent) 0 4deg,
+      transparent 4deg 10deg),
+    repeating-conic-gradient(from 2deg at calc(100% - 64px) 64px,
+      color-mix(in srgb, var(--accent2-local, var(--accent-2)) 10%, transparent) 0 3deg,
+      transparent 3deg 10deg),
+    /* micro-circuit grid suavizado */
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent-local, var(--accent)) 2%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent2-local, var(--accent-2)) 1.5%, transparent) 0 1px, transparent 1px 22px);
+  opacity:.18;
+  transition: opacity .2s ease;
+}
+.menu-card:hover::before, .race-card:hover::before, .virtue-col:hover::before{ opacity:.22 }
+
+/* Race-card specific translucent pattern layer per race */
+.race-card::before{
+  background:
+    /* halo amplio */
+    radial-gradient(220px 220px at calc(100% - 64px) 64px, color-mix(in srgb, var(--accent-local, var(--accent)) 18%, transparent) 0%, transparent 60%),
+    /* anillo brillante */
+    radial-gradient(220px 220px at calc(100% - 64px) 64px, transparent 54%, color-mix(in srgb, var(--accent-local, var(--accent)) 30%, transparent) 56%, transparent 60%),
+    /* segmentos rúnicos */
+    repeating-conic-gradient(from 0deg at calc(100% - 64px) 64px,
+      color-mix(in srgb, var(--accent-local, var(--accent)) 12%, transparent) 0 4deg,
+      transparent 4deg 10deg),
+    repeating-conic-gradient(from 2deg at calc(100% - 64px) 64px,
+      color-mix(in srgb, var(--accent2-local, var(--accent-2)) 10%, transparent) 0 3deg,
+      transparent 3deg 10deg),
+    /* micro-circuit grid suavizado */
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent-local, var(--accent)) 2%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent2-local, var(--accent-2)) 1.5%, transparent) 0 1px, transparent 1px 22px),
+    /* patrón por raza como capa inferior */
+    var(--pattern-local, repeating-linear-gradient(0deg, color-mix(in srgb, var(--accent-local, var(--accent)) 2.5%, transparent) 0 1px, transparent 1px 22px));
+}
+
+/* Neon rune corner brackets */
+.menu-card::after, .race-card::after, .virtue-col::after{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(90deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* TL horiz */
+    linear-gradient(180deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* TL vert */
+    linear-gradient(90deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* TR horiz */
+    linear-gradient(180deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* TR vert */
+    linear-gradient(90deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* BL horiz */
+    linear-gradient(180deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* BL vert */
+    linear-gradient(90deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%), /* BR horiz */
+    linear-gradient(180deg, var(--accent-local, var(--accent)) 0, var(--accent-local, var(--accent)) 100%); /* BR vert */
+  background-repeat: no-repeat;
+  background-size:
+    22px 2px, 2px 22px,
+    22px 2px, 2px 22px,
+    22px 2px, 2px 22px,
+    22px 2px, 2px 22px;
+  background-position:
+    top 10px left 10px, top 10px left 10px,
+    top 10px right 10px, top 10px right 10px,
+    bottom 10px left 10px, bottom 10px left 10px,
+    bottom 10px right 10px, bottom 10px right 10px;
+  opacity:.65;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 40%, transparent));
+  transition: transform .2s ease, opacity .2s ease;
+}
+.menu-card:hover::after, .race-card:hover::after, .virtue-col:hover::after{
+  opacity:.9; transform: scale(1.01);
+}
+
+/* Image frame with corners */
+.race-art{ position:relative; }
+.race-art::before{
+  content:""; position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen;
+  background:
+    /* velo cálido de polvo */
+    radial-gradient(220px 160px at 10% 10%, color-mix(in srgb, var(--sand-3) 12%, transparent) 0%, transparent 70%),
+    /* patrón hex sutil */
+    linear-gradient(30deg, color-mix(in srgb, var(--accent-local, var(--accent)) 7%, transparent) 2px, transparent 2px) 0 0/22px 38px,
+    linear-gradient(150deg, color-mix(in srgb, var(--accent-local, var(--accent)) 7%, transparent) 2px, transparent 2px) 0 0/22px 38px,
+    linear-gradient(90deg, color-mix(in srgb, var(--accent2-local, var(--accent-2)) 6%, transparent) 2px, transparent 2px) 11px 19px/22px 38px;
+  opacity:.1; transition: opacity .2s ease;
+}
+
+.race-card:hover .race-art::before{ opacity:.12 }
+
+.race-art::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(90deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(180deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(90deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(180deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(90deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(180deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(90deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%),
+    linear-gradient(180deg, var(--accent2-local, var(--accent-2)) 0, var(--accent2-local, var(--accent-2)) 100%);
+  background-repeat:no-repeat;
+  background-size:
+    16px 2px, 2px 16px,
+    16px 2px, 2px 16px,
+    16px 2px, 2px 16px,
+    16px 2px, 2px 16px;
+  background-position:
+    top 6px left 6px, top 6px left 6px,
+    top 6px right 6px, top 6px right 6px,
+    bottom 6px left 6px, bottom 6px left 6px,
+    bottom 6px right 6px, bottom 6px right 6px;
+  opacity:.6;
+}
+
+@media (max-width: 1280px){
+  .cards-grid{ grid-template-columns: 1fr; }
+}
+@media (max-width: 980px){
+  .race-grid{ grid-template-columns: repeat(2, 1fr); }
+  .virtues-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px){
+  .race-grid{ grid-template-columns: 1fr; }
+  .virtues-grid{ grid-template-columns: 1fr; }
+}

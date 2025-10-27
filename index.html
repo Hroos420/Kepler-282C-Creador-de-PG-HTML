@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kepler 282C - Selección de Raza</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="session.js"></script>
+    <script src="theme.js"></script>
+  </head>
+  <body>
+    <header class="page-header">
+<div class="brand-wrap"><picture><source srcset="assets/kepler282c_logo.webp" type="image/webp"/><img class="brand-logo" src="assets/kepler282c_logo.png" alt="Kepler 282C" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;1024&quot; height=&quot;256&quot; viewBox=&quot;0 0 1024 256&quot;><defs><linearGradient id=&quot;g&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;1&quot; y2=&quot;0&quot;><stop stop-color=&quot;%233ef3ff&quot;/><stop offset=&quot;1&quot; stop-color=&quot;%238e5bff&quot;/></linearGradient></defs><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;transparent&quot;/><text x=&quot;50%&quot; y=&quot;55%&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot; font-family=&quot;UnifrakturCook, IM Fell English, serif&quot; font-size=&quot;120&quot; fill=&quot;url(%23g)&quot; stroke=&quot;%23000&quot; stroke-width=&quot;3&quot;>KEPLER 282C</text></svg>';"/></picture></div>
+      <button id="back-btn" class="back-btn" aria-label="Volver atrás" hidden>Atrás</button>
+      <h1>Selecciona tu Raza</h1>
+      <p class="subtitle">Elige una de las 6 razas jugables para tu ficha de personaje.</p>
+    </header>
+
+    <main>
+      <section class="race-section" aria-labelledby="race-title">
+        <h2 id="race-title" class="sr-only">Razas jugables</h2>
+        <div class="race-grid" role="radiogroup" aria-label="Razas jugables">
+          <button class="race-card" role="radio" aria-checked="false" data-race="humanos">
+            <figure class="race-art">
+              <img src="assets/humanos.webp" alt="Humanos" />
+            </figure>
+            <h3 class="race-name">Humanos</h3>
+            <p class="race-desc">Hijos del “Primer Aliento”, aprendieron a elegir entre azul y rojo sin inclinarse ante ninguno: libres para tejer fe, redención y rebeldía en Serenatia, Aurodon y Umbraeve; puente vivo entre magia y maldición.<br/><span class="race-stats">FIS 1 · DES 1 · SOC 2 · MEN 1 · NMag 1 · NMal 1</span></p>
+          </button>
+
+          <button class="race-card" role="radio" aria-checked="false" data-race="elfen">
+            <figure class="race-art">
+              <img src="assets/elfen.webp" alt="Elfen" />
+            </figure>
+            <h3 class="race-name">Elfen</h3>
+            <p class="race-desc">Nacidos en Nimbosia, islas flotantes donde el equilibrio es ley: tres Reinas custodian memoria, creación y frontera; cada mirada brilla con un elemento… salvo los Eil-Narim, que eligen guardia gris o exilio.<br/><span class="race-stats">FIS 1 · DES 2 · SOC 2 · MEN 1 · NMag 1 · NMal 0</span></p>
+          </button>
+
+          <button class="race-card" role="radio" aria-checked="false" data-race="zwerges">
+            <figure class="race-art">
+              <img src="assets/zwerges.webp" alt="Zwerges" />
+            </figure>
+            <h3 class="race-name">Zwerges</h3>
+            <p class="race-desc">Forjan con la Maldición como otros con el fuego: casas herreras, ciudades-forja y un rigor amable; su secreto más solemne transforma la chispa azul en gemas rojas que alimentan mil hornos y juramentos.<br/><span class="race-stats">FIS 2 · DES 1 · SOC 1 · MEN 1 · NMag 0 · NMal 1</span></p>
+          </button>
+
+          <button class="race-card" role="radio" aria-checked="false" data-race="roboticos">
+            <figure class="race-art">
+              <img src="assets/roboticos.webp" alt="Robóticos" />
+            </figure>
+            <h3 class="race-name">Robóticos</h3>
+            <p class="race-desc">No nacen: despiertan. Un núcleo azul o rojo les marca el pulso mientras buscan Technomaquia y responden a la Llamada del Eco; reliquias caminantes que a veces recuerdan vidas que no son suyas.<br/><span class="race-stats">FIS 3 · DES 1 · SOC 1 · MEN 1 · NMag 1/0 (núcleo) · NMal 0/1 (núcleo)</span></p>
+          </button>
+
+          <button class="race-card" role="radio" aria-checked="false" data-race="ithariis">
+            <figure class="race-art">
+              <img src="assets/ithariis.webp" alt="Ithariis" />
+            </figure>
+            <h3 class="race-name">Ithariis</h3>
+            <p class="race-desc">Señores de ciudades que caminan sobre colosos domados; piel de ceniza, ojos abisales y voluntad tallada en la Luna Roja: su ciencia es la dominación, su arquitectura, un laberinto de obediencias y silencios.<br/><span class="race-stats">FIS 1 · DES 2 · SOC 1 · MEN 2 · NMag 0 · NMal 1</span></p>
+          </button>
+
+          <button class="race-card" role="radio" aria-checked="false" data-race="antropeltis">
+            <figure class="race-art">
+              <img src="assets/antropeltis.webp" alt="Antropeltis" />
+            </figure>
+            <h3 class="race-name">Antropeltis</h3>
+            <p class="race-desc">Estirpe de instinto y memoria de ruinas: castas animales que vigilan, cazan o recuerdan; divididos entre Céfidon (aliento azul) y Ultharia (engranaje maldito), unidos por un juramento que hizo de dos ciudades una república ardiente.<br/><span class="race-stats">FIS 2 · DES 1 · SOC 1 · MEN 1 · NMag 1 (Céfidon) / NMal 1 (Ultharia)</span></p>
+          </button>
+        </div>
+
+        <div class="selection-bar" aria-live="polite">
+          <span id="selection-text">Ninguna raza seleccionada.</span>
+          <button id="continue-btn" class="continue-btn" disabled>Continuar</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

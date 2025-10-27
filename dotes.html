@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kepler 282C — Elección de Dotes</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="session.js"></script>
+    <script src="theme.js"></script>
+  </head>
+  <body>
+    <header class="page-header">
+<div class="brand-wrap"><picture><source srcset="assets/kepler282c_logo.webp" type="image/webp"/><img class="brand-logo" src="assets/kepler282c_logo.png" alt="Kepler 282C" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;1024&quot; height=&quot;256&quot; viewBox=&quot;0 0 1024 256&quot;><defs><linearGradient id=&quot;g&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;1&quot; y2=&quot;0&quot;><stop stop-color=&quot;%233ef3ff&quot;/><stop offset=&quot;1&quot; stop-color=&quot;%238e5bff&quot;/></linearGradient></defs><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;transparent&quot;/><text x=&quot;50%&quot; y=&quot;55%&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot; font-family=&quot;UnifrakturCook, IM Fell English, serif&quot; font-size=&quot;120&quot; fill=&quot;url(%23g)&quot; stroke=&quot;%23000&quot; stroke-width=&quot;3&quot;>KEPLER 282C</text></svg>';"/></picture></div>
+      <button id="back-btn" class="back-btn" aria-label="Volver atrás">Atrás</button>
+      <h1>Elección de Dotes</h1>
+      <p class="subtitle">Selecciona 2 dotes disponibles según tus atributos, raza y niveles lunares.</p>
+    </header>
+
+    <main>
+      <section>
+        <div class="selection-bar" style="display:block">
+          <h3 style="margin:0 0 6px">¿Qué son los Dotes?</h3>
+          <p style="margin:0">Los Dotes representan el refinamiento de la experiencia, instintos raciales o afinidades lunares del personaje. A diferencia de las Virtudes, que son manifestaciones activas de poder mágico o maldito, los Dotes son rasgos pasivos o reactivos que moldean el estilo de juego y personalización del personaje.</p>
+        </div>
+        <div class="selection-bar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px">
+          <div>
+            <div id="race-picked">Raza: —</div>
+            <div id="attrs-picked" style="color:var(--muted)">Atributos — FIS — • DES — • SOC — • MEN —</div>
+            <div id="lunar-picked" style="color:var(--muted)">Nivel Mágico: — | Nivel Maldito: —</div>
+            <div id="quota-picked" style="color:var(--muted)">Puedes elegir 2 dotes.</div>
+          </div>
+          <strong id="count-usage">Seleccionadas: 0 / 2</strong>
+        </div>
+
+        <div class="selection-bar" style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <span style="color:var(--muted)">Solo se muestran dotes cuyos requisitos cumples.</span>
+          <div style="margin-left:auto; display:flex; gap:10px">
+            <input id="search" placeholder="Buscar dote..." class="note-input" style="min-width:220px" />
+          </div>
+        </div>
+
+        <div id="dotes-grid" class="cards-grid" style="margin-top:14px"></div>
+
+        <div class="selection-bar" style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap">
+          <button id="next-btn" class="continue-btn" disabled>Siguiente: Selección de Armamento</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="virtudes_generales_data.js" defer></script>
+    <script src="virtudes_data.js" defer></script>
+    <script src="dotes_data.js" defer></script>
+    <script src="dotes.js" defer></script>
+  </body>
+</html>

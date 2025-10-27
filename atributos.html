@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kepler 282C — Atributos Base</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="session.js"></script>
+    <script src="theme.js"></script>
+  </head>
+  <body>
+    <header class="page-header">
+<div class="brand-wrap"><picture><source srcset="assets/kepler282c_logo.webp" type="image/webp"/><img class="brand-logo" src="assets/kepler282c_logo.png" alt="Kepler 282C" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;1024&quot; height=&quot;256&quot; viewBox=&quot;0 0 1024 256&quot;><defs><linearGradient id=&quot;g&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;1&quot; y2=&quot;0&quot;><stop stop-color=&quot;%233ef3ff&quot;/><stop offset=&quot;1&quot; stop-color=&quot;%238e5bff&quot;/></linearGradient></defs><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;transparent&quot;/><text x=&quot;50%&quot; y=&quot;55%&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot; font-family=&quot;UnifrakturCook, IM Fell English, serif&quot; font-size=&quot;120&quot; fill=&quot;url(%23g)&quot; stroke=&quot;%23000&quot; stroke-width=&quot;3&quot;>KEPLER 282C</text></svg>';"/></picture></div>
+      <button id="back-btn" class="back-btn" aria-label="Volver atrás">Atrás</button>
+      <h1 id="title">Atributos base</h1>
+      <p class="subtitle" id="subtitle">
+        Estos son los Atributos base de tu raza. Ahora elige a cuál sumarás +1.
+      </p>
+    </header>
+
+    <main>
+      <section aria-labelledby="attrs-title">
+        <h2 id="attrs-title" class="sr-only">Atributos de Nivel 1</h2>
+
+        <div id="race-banner" class="selection-bar" aria-live="polite">
+          <span id="race-picked">Raza: —</span>
+          <a href="index.html" class="continue-btn" style="text-decoration:none; text-align:center">Cambiar raza</a>
+        </div>
+
+        <div class="selection-bar" style="margin-top:14px; display:block">
+          <p style="margin:0 0 8px; color: var(--muted)">
+            Los Atributos representan las capacidades de tu personaje en distintos ámbitos—combate, exploración, interacción y conocimiento—y se suman a tus tiradas y Virtudes.
+          </p>
+          <p style="margin:0 0 8px; color: var(--muted)">
+            Físico mide fuerza y aguante (golpe C.C., salud, fortaleza); Destreza agilidad y precisión (ataque a distancia, movimiento, reflejos); Social carisma e influencia (negociar, engañar, intimidar, carácter); Mental inteligencia, percepción y voluntad (investigar, resistir, planear).
+          </p>
+          <p style="margin:0 0 8px; color: var(--muted)">
+            En Kepler, la Magia (Luna Azul) y la Maldición (Luna Roja) no reemplazan atributos: potencian acciones que canalizan/interpretan, apilándose sobre Mental o Social según el efecto.
+          </p>
+          <p style="margin:0; color: var(--muted)">
+            Así, tus Atributos son la forma en que tu héroe resuena con el mundo: músculos contra la intemperie, pasos entre ruinas, voz que abre puertas y mente que descifra lo imposible.
+          </p>
+        </div>
+
+        <p style="margin-top:14px; color: var(--muted)">
+          Selecciona un atributo para aplicar tu Punto Extra de Creación (+1). Este punto solo puede aplicarse a Físico, Destreza, Social o Mental.
+        </p>
+
+        <div id="attr-grid" class="race-grid" role="radiogroup" aria-label="Atributos base">
+          <!-- Cards generadas por JS -->
+        </div>
+
+        <div class="selection-bar" style="margin-top:20px">
+          <div>
+            <div id="preview-base" style="color:var(--muted)">Base: —</div>
+            <div id="preview-final">Con +1: —</div>
+          </div>
+          <button id="confirm-btn" class="continue-btn" disabled>Confirmar</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="atributos.js" defer></script>
+  </body>
+</html>

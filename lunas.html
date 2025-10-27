@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kepler 282C — Selección de Virtudes Lunares</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="session.js"></script>
+    <script src="theme.js"></script>
+  </head>
+  <body>
+    <header class="page-header">
+<div class="brand-wrap"><picture><source srcset="assets/kepler282c_logo.webp" type="image/webp"/><img class="brand-logo" src="assets/kepler282c_logo.png" alt="Kepler 282C" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;1024&quot; height=&quot;256&quot; viewBox=&quot;0 0 1024 256&quot;><defs><linearGradient id=&quot;g&quot; x1=&quot;0&quot; y1=&quot;0&quot; x2=&quot;1&quot; y2=&quot;0&quot;><stop stop-color=&quot;%233ef3ff&quot;/><stop offset=&quot;1&quot; stop-color=&quot;%238e5bff&quot;/></linearGradient></defs><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;transparent&quot;/><text x=&quot;50%&quot; y=&quot;55%&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot; font-family=&quot;UnifrakturCook, IM Fell English, serif&quot; font-size=&quot;120&quot; fill=&quot;url(%23g)&quot; stroke=&quot;%23000&quot; stroke-width=&quot;3&quot;>KEPLER 282C</text></svg>';"/></picture></div>
+      <button id="back-btn" class="back-btn" aria-label="Volver atrás">Atrás</button>
+      <h1>Selección de Virtudes Lunares (Mágicas / Malditas)</h1>
+      <p class="subtitle">Elige tus virtudes de Nivel 1 según tu raza y senda lunar.</p>
+    </header>
+
+    <main>
+      <section>
+        <div class="selection-bar" style="display:block">
+          <h3 style="margin:0 0 6px">Qué estás eligiendo</h3>
+          <p style="margin:0 0 8px">Seleccionarás Virtudes Mágicas (si tu raza accede a la Luna Azul) y/o Virtudes Malditas (si tu raza accede a la Luna Roja). Estas virtudes son habilidades ligadas a las lunas de Kepler 282-C y escalan con tu Nivel Mágico y/o Nivel Maldito.</p>
+          <h3 style="margin:10px 0 6px">Cómo funcionan</h3>
+          <p style="margin:0 0 8px">Muchas virtudes ofensivas usan la fórmula: <strong>(Atributo raíz) + (Nivel Mágico o Maldito) + (Arma/Artefacto) + (Otros)</strong>. Otras no requieren tirada. Revisa alcance, duración, área y CD en cada virtud.</p>
+          <h3 style="margin:10px 0 6px">Cuántas eliges en Nivel 1</h3>
+          <p id="quota" style="margin:0 0 8px">—</p>
+          <h3 style="margin:10px 0 6px">Qué puedes combinar</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--muted)">
+            <li>Si tu raza inicia con Nivel Mágico 1, eliges Mágicas.</li>
+            <li>Si inicia con Nivel Maldito 1, eliges Malditas.</li>
+            <li>Humanos: pueden mezclar ambas sendas.</li>
+            <li>Robóticos: deben elegir Núcleo Azul (Mágico) o Rojo (Maldito).</li>
+          </ul>
+        </div>
+
+        <div id="race-banner" class="selection-bar" style="margin-top:12px; display:flex; gap:10px; align-items:center; justify-content:space-between">
+          <div>
+            <div id="race-picked">Raza: —</div>
+            <div id="attrs-picked" style="color:var(--muted)">Atributos finales — FIS — • DES — • SOC — • MEN —</div>
+            <div id="lunar-picked" style="color:var(--muted)">Nivel Mágico: — | Nivel Maldito: —</div>
+          </div>
+          <div>
+            <strong id="count-usage">Seleccionadas: 0 / 0</strong>
+          </div>
+        </div>
+
+        <div id="choose-path" class="race-grid" style="margin-top:12px" role="radiogroup" aria-label="Elegir senda lunar" hidden>
+          <button class="race-card" role="radio" aria-checked="false" data-path="azul" style="border-color:#4aa3ff">
+            <h3 class="race-name">Luna Azul — Magia</h3>
+            <p class="race-desc">Luna primigenia y natural de Kepler. Canalización, curación, control elemental y proezas arcanas.</p>
+          </button>
+          <button class="race-card" role="radio" aria-checked="false" data-path="roja" style="border-color:#ff5a5a">
+            <h3 class="race-name">Luna Roja — Maldición del Destructor</h3>
+            <p class="race-desc">Poder que deforma, consume o impone. Marcas, penalidades y efectos persistentes a costa del mundo.</p>
+          </button>
+        </div>
+
+        <div class="selection-bar" style="margin-top:14px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap">
+          <span style="color:var(--muted)">Confirma tu senda lunar para continuar a la selección de virtudes.</span>
+          <button id="next-btn" class="continue-btn" disabled>Siguiente</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="virtudes_data.js"></script>
+    <script src="lunas.js" defer></script>
+  </body>
+</html>
