@@ -1,1 +1,2 @@
-Comienza abriendo el archivo HTML Index
+Inicia el proyecto con: node server.js
+Luego abre: http://localhost:4321
