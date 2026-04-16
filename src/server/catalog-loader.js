@@ -3,8 +3,9 @@ import path from "node:path";
 import vm from "node:vm";
 
 import { parseEquipmentCatalog } from "../shared/equipment-parser.js";
-import { GLOSSARY, RACE_DEFINITIONS } from "../shared/race-data.js";
+import { GLOSSARY } from "../shared/race-data.js";
 import { extractLine } from "../shared/text.js";
+import { buildRaceCatalog } from "./race-presentation-loader.js";
 
 const PROJECT_ROOT = path.resolve(process.cwd());
 
@@ -17,9 +18,10 @@ export function loadCatalogs() {
   const lunarVirtues = buildLunarVirtues(lunarSource.KEPLER_VIRTUDES);
   const dotes = buildDotes(dotesSource.KEPLER_DOTES);
   const equipment = parseEquipmentCatalog(equipmentSource.KEPLER_EQUIP_TEXT);
+  const races = buildRaceCatalog();
 
   return {
-    races: RACE_DEFINITIONS,
+    races,
     glossary: GLOSSARY,
     generalVirtues,
     lunarVirtues,

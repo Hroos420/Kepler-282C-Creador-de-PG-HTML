@@ -499,6 +499,397 @@ button {
   margin-top: 20px;
 }
 
+.form-section,
+.data-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.group-list {
+  display: grid;
+}
+
+.slot-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.random-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 16px;
+}
+
+.pool-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.result-card {
+  cursor: default;
+}
+
+.result-card:hover {
+  border-color: var(--line);
+}
+
+.selector-card p,
+.lunar-card p,
+.slot-card p,
+.help-card p,
+.callout p,
+.summary-block p {
+  margin: 0;
+}
+
+.slot-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.slot-card dl div {
+  display: grid;
+  gap: 4px;
+}
+
+.slot-card dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.slot-card dd {
+  margin: 0;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(95, 214, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.identity-form-panel {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(15, 27, 38, 0.92) 0%, rgba(19, 36, 53, 0.96) 100%);
+  box-shadow: var(--shadow);
+}
+
+.race-stage {
+  --race-accent: var(--blue);
+  --race-accent-secondary: var(--cyan);
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.race-selector-rail,
+.race-hero-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow);
+}
+
+.race-selector-rail {
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(7, 16, 24, 0.9) 0%, rgba(12, 24, 35, 0.98) 100%);
+}
+
+.race-selector-head h3 {
+  margin: 0;
+}
+
+.race-selector-head p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.race-selector-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.race-tab {
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%);
+  color: var(--text);
+  text-align: left;
+  display: grid;
+  gap: 8px;
+  transition:
+    transform 120ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.race-tab:hover {
+  transform: translateY(-1px);
+  border-color: rgba(95, 214, 255, 0.25);
+}
+
+.race-tab.is-active {
+  border-color: color-mix(in srgb, var(--race-accent) 70%, white 20%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 12px 30px color-mix(in srgb, var(--race-accent) 25%, transparent);
+}
+
+.race-tab.is-confirmed {
+  box-shadow: inset 0 0 0 1px rgba(121, 240, 170, 0.28);
+}
+
+.race-tab-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.race-tab-name {
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.race-tab strong,
+.race-tab p,
+.race-tab-meta {
+  margin: 0;
+}
+
+.race-tab-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.race-hero-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  min-height: 560px;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--race-accent-secondary) 22%, transparent) 0%, transparent 38%),
+    radial-gradient(circle at bottom left, color-mix(in srgb, var(--race-accent) 22%, transparent) 0%, transparent 34%),
+    linear-gradient(135deg, rgba(9, 16, 24, 0.96) 0%, rgba(16, 28, 41, 0.98) 54%, rgba(12, 22, 31, 0.98) 100%);
+  animation: race-panel-enter 280ms ease;
+}
+
+.race-hero-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.25));
+}
+
+.race-hero-copy,
+.race-hero-media {
+  position: relative;
+  z-index: 1;
+}
+
+.race-hero-copy {
+  padding: 28px;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.race-hero-copy h3 {
+  margin: 0;
+  font-size: clamp(2rem, 3.6vw, 3.3rem);
+  line-height: 0.95;
+}
+
+.race-hero-hook {
+  font-size: 1.08rem;
+  color: color-mix(in srgb, white 84%, var(--race-accent-secondary) 16%);
+}
+
+.race-hero-summary {
+  color: var(--muted);
+  max-width: 62ch;
+  font-size: 1rem;
+}
+
+.race-identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.race-info-card {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  display: grid;
+  gap: 8px;
+}
+
+.race-info-card strong,
+.race-info-card p {
+  margin: 0;
+}
+
+.race-stat-ribbon {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.race-stat-pill {
+  padding: 14px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--race-accent) 14%, rgba(255, 255, 255, 0.02)) 0%, rgba(255, 255, 255, 0.03) 100%);
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.race-stat-pill span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.race-stat-pill strong {
+  font-size: 1.2rem;
+}
+
+.race-confirm-bar,
+.race-confirm-status {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.race-confirm-bar {
+  justify-content: space-between;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.status-badge--active {
+  border-color: color-mix(in srgb, var(--race-accent-secondary) 52%, transparent);
+}
+
+.status-badge--confirmed {
+  border-color: rgba(121, 240, 170, 0.35);
+  color: var(--ok);
+}
+
+.status-badge--pending {
+  border-color: rgba(255, 191, 95, 0.35);
+  color: var(--amber);
+}
+
+.race-hero-media {
+  padding: 24px;
+  display: grid;
+  align-items: stretch;
+}
+
+.race-hero-frame {
+  position: relative;
+  min-height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top, color-mix(in srgb, var(--race-accent) 28%, transparent) 0%, transparent 52%),
+    linear-gradient(180deg, rgba(14, 21, 31, 0.92) 0%, rgba(5, 10, 16, 0.98) 100%);
+  display: grid;
+  place-items: center;
+}
+
+.race-image-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 16, 24, 0.72);
+  backdrop-filter: blur(10px);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, white 82%, var(--race-accent-secondary) 18%);
+}
+
+.race-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.race-hero-frame--placeholder {
+  padding: 24px;
+  text-align: center;
+  gap: 16px;
+}
+
+.race-placeholder-mark {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--race-accent) 0%, var(--race-accent-secondary) 100%);
+  color: #071018;
+}
+
+@keyframes race-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 1200px) {
   .app-shell,
   .content-grid {
@@ -507,6 +898,19 @@ button {
 
   .library-panel {
     position: static;
+  }
+
+  .race-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .race-selector-rail {
+    order: 2;
+  }
+
+  .race-hero-panel {
+    grid-template-columns: 1fr;
+    min-height: 0;
   }
 }
 
@@ -524,5 +928,32 @@ button {
 
   .progress-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .race-selector-list {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .race-identity-grid,
+  .race-stat-ribbon {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .race-hero-copy,
+  .race-hero-media,
+  .identity-form-panel {
+    padding: 18px;
+  }
+
+  .race-hero-image {
+    max-height: 380px;
+  }
+
+  .race-confirm-bar {
+    align-items: stretch;
+  }
+
+  .race-confirm-bar .primary-button {
+    width: 100%;
   }
 }

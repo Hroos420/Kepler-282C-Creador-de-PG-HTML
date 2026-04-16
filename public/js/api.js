@@ -29,6 +29,12 @@ export const api = {
       body: JSON.stringify({ draft })
     });
   },
+  applyAction(draft, action) {
+    return request("/api/actions", {
+      method: "POST",
+      body: JSON.stringify({ draft, action })
+    });
+  },
   listCharacters() {
     return request("/api/characters");
   },

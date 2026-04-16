@@ -19,12 +19,10 @@ export function createEmptyDraft() {
     generalVirtues: {},
     lunarVirtueIds: [],
     selectedDoteIds: [],
-    orientation: "",
-    equipment: {
-      primaryId: "",
-      armorId: "",
-      shieldId: ""
-    },
+    offensiveOrientation: "",
+    defensiveOrientation: "",
+    equipment: createEmptyEquipment(),
+    creationHealth: createEmptyCreationHealth(),
     ui: {
       step: STEP_DEFINITIONS[0].id
     }
@@ -54,8 +52,10 @@ export function normalizeDraft(input) {
     generalVirtues: normalizePointMap(input.generalVirtues),
     lunarVirtueIds: normalizeStringArray(input.lunarVirtueIds),
     selectedDoteIds: normalizeStringArray(input.selectedDoteIds),
-    orientation: String(input.orientation || "").trim(),
+    offensiveOrientation: normalizeOffensiveOrientation(input.offensiveOrientation || input.orientation),
+    defensiveOrientation: normalizeDefensiveOrientation(input.defensiveOrientation),
     equipment: normalizeEquipment(input.equipment),
+    creationHealth: normalizeCreationHealth(input.creationHealth),
     ui: {
       step: normalizeStep(input.ui?.step)
     }
@@ -86,12 +86,10 @@ function normalizeLegacyDraft(legacyRecord) {
     generalVirtues: normalizePointMap(legacyRecord.virtues),
     lunarVirtueIds: normalizeStringArray(legacyRecord.lunarVirtues),
     selectedDoteIds: normalizeStringArray(legacyRecord.dotes),
-    orientation: inferLegacyOrientation(legacyRecord),
-    equipment: {
-      primaryId: "",
-      armorId: "",
-      shieldId: ""
-    },
+    offensiveOrientation: inferLegacyOrientation(legacyRecord),
+    defensiveOrientation: "",
+    equipment: createEmptyEquipment(),
+    creationHealth: createEmptyCreationHealth(),
     ui: {
       step: STEP_DEFINITIONS.at(-1).id
     }
@@ -160,8 +158,46 @@ function normalizeStep(value) {
 function normalizeEquipment(value) {
   return {
     primaryId: String(value?.primaryId || "").trim(),
+    primaryInitialId: String(value?.primaryInitialId || "").trim(),
+    primaryRerollsUsed: normalizeCounter(value?.primaryRerollsUsed),
     armorId: String(value?.armorId || "").trim(),
-    shieldId: String(value?.shieldId || "").trim()
+    armorInitialId: String(value?.armorInitialId || "").trim(),
+    armorRerollsUsed: normalizeCounter(value?.armorRerollsUsed),
+    shieldId: String(value?.shieldId || "").trim(),
+    shieldInitialId: String(value?.shieldInitialId || "").trim(),
+    shieldRerollsUsed: normalizeCounter(value?.shieldRerollsUsed)
+  };
+}
+
+function createEmptyEquipment() {
+  return {
+    primaryId: "",
+    primaryInitialId: "",
+    primaryRerollsUsed: 0,
+    armorId: "",
+    armorInitialId: "",
+    armorRerollsUsed: 0,
+    shieldId: "",
+    shieldInitialId: "",
+    shieldRerollsUsed: 0
+  };
+}
+
+function createEmptyCreationHealth() {
+  return {
+    die: "",
+    initialValue: 0,
+    value: 0,
+    rerollsUsed: 0
+  };
+}
+
+function normalizeCreationHealth(value) {
+  return {
+    die: String(value?.die || "").trim().toLowerCase(),
+    initialValue: normalizeCounter(value?.initialValue),
+    value: normalizeCounter(value?.value),
+    rerollsUsed: normalizeCounter(value?.rerollsUsed)
   };
 }
 
@@ -188,6 +224,24 @@ function normalizeStringArray(value) {
 function normalizeAttributeKey(value) {
   const key = String(value || "").trim().toUpperCase();
   return ATTRIBUTE_ORDER.includes(key) ? key : "";
+}
+
+function normalizeOffensiveOrientation(value) {
+  const key = String(value || "").trim();
+  return ["melee", "ranged", "magic", "performance"].includes(key) ? key : "";
+}
+
+function normalizeDefensiveOrientation(value) {
+  const key = String(value || "").trim();
+  return ["resistance", "evasion"].includes(key) ? key : "";
+}
+
+function normalizeCounter(value) {
+  const number = Number(value || 0);
+  if (!Number.isFinite(number) || number < 0) {
+    return 0;
+  }
+  return Math.floor(number);
 }
 
 export function serializeDraft(draft) {

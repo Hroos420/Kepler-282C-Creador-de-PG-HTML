@@ -1,26 +1,32 @@
 # Kepler-282C Creador de Personajes
 
-Refactor completo del creador para dejarlo en una arquitectura mantenible con:
+Refactor del creador para dejarlo con:
 
 - frontend SPA en `public/`
 - backend local Node en `src/server/`
 - persistencia SQLite local en `data/kepler.sqlite`
-- rules engine centralizado para validaciones, filtros y cálculos
-- tests mínimos con `node --test`
+- rules engine centralizado para validaciones, filtros, randomizacion y calculos
+- tests con `node --test`
 
 ## Requisitos
 
 - Node.js 24 o superior
 
-## Cómo correr
-
-1. En la raíz del proyecto ejecuta:
+## Como correr
 
 ```bash
 node server.js
 ```
 
-2. Abre `http://localhost:4321`
+Luego abre `http://localhost:4321`.
+
+### Doble clic en Windows
+
+Tambien puedes usar:
+
+- [Iniciar Kepler 282C.bat](</c:/Users/PC RST/Desktop/Kepler Github/Kepler-282C-Creador-de-PG-HTML/Iniciar Kepler 282C.bat>)
+
+Ese lanzador inicia `server.js` y abre el navegador.
 
 ## Scripts
 
@@ -29,30 +35,40 @@ node server.js
 node --test
 ```
 
-## Cómo funciona el creador
+## Como funciona el creador
 
 1. Define identidad, raza y notas.
-2. Resuelve la configuración racial y lunar.
-3. Asigna el punto extra solo a Físico, Destreza, Social o Mental.
-4. Reparte el pool inicial de Técnica / Erudición / Dominio con cap 3 por virtud.
-5. Elige virtudes lunares válidas según raza y senda.
-6. Selecciona el dote libre válido y revisa el estado del slot racial.
-7. Elige orientación principal.
-8. Selecciona equipo compatible con orientación y acceso lunar.
+2. Resuelve la configuracion racial y lunar.
+3. Asigna el punto extra solo a Fisico, Destreza, Social o Mental.
+4. Reparte el pool inicial de Tecnica / Erudicion / Dominio con cap 3 por virtud.
+5. Elige virtudes lunares validas segun raza y senda.
+6. Selecciona el dote libre valido y revisa el estado del slot racial.
+7. Elige orientacion ofensiva principal.
+8. Randomiza arma principal, orientacion defensiva, armadura, escudo y dado extra de vida desde pools filtrados, con re-rolls limitados.
 9. Revisa resumen, guarda, exporta o sigue editando.
 
 ## Persistencia
 
 - Guardado principal en SQLite.
-- Autosave opcional también persistido localmente.
-- Exportación e importación en JSON.
+- Autosave opcional tambien persistido localmente.
+- Exportacion e importacion en JSON.
+
+## Arte y lore racial
+
+- Las imagenes de raza se resuelven desde la carpeta local `Imagenes Razas/`.
+- El resolvedor normaliza mayusculas, espacios, guiones, guiones bajos y extensiones `.png`, `.webp`, `.jpg`, `.jpeg`.
+- Si falta una imagen local, el servidor intenta usar `assets/`; si tampoco existe, la UI muestra un placeholder sin romper el flujo.
+- El lore fuente del repo vive en `Lore Razas/` como `.docx`.
+- La UI no parsea esos archivos en runtime: consume el catalogo derivado `src/shared/race-presentation-data.js`, armado a partir del lore local real.
 
 ## Tests cubiertos
 
 - dualidad humana
-- elección lunar robótica
+- eleccion lunar robotica
 - filtro de virtudes por luna
-- filtro de equipo por orientación
-- derivados base
-- restricción del punto extra
+- filtro de equipo por orientacion
+- randomizacion ofensiva y defensiva desde pool filtrado
+- limite de re-roll para arma, armadura y escudo
+- dado extra de vida racial y salud final
 - guardado y carga desde SQLite
+- carga de imagenes locales y resumenes raciales derivados del lore

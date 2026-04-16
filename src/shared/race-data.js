@@ -1,12 +1,12 @@
-export const DATA_VERSION = 1;
-export const SCHEMA_VERSION = 1;
+export const DATA_VERSION = 2;
+export const SCHEMA_VERSION = 2;
 export const CREATION_GENERAL_VIRTUE_CAP = 3;
 export const CREATION_LEVEL = 1;
 
 export const ATTRIBUTE_ORDER = ["FIS", "DES", "SOC", "MEN"];
 
 export const ATTRIBUTE_LABELS = {
-  FIS: "Físico",
+  FIS: "Fisico",
   DES: "Destreza",
   SOC: "Social",
   MEN: "Mental"
@@ -17,32 +17,49 @@ export const MOON_LABELS = {
   roja: "Luna Roja"
 };
 
-export const ORIENTATION_DEFINITIONS = [
+export const OFFENSIVE_ORIENTATION_DEFINITIONS = [
   {
     id: "melee",
     title: "Cuerpo a cuerpo",
     shortTitle: "C.C.",
-    description: "Prioriza armas cuerpo a cuerpo y cálculos basados en Físico."
+    description: "Prioriza armas cuerpo a cuerpo y calculos basados en Fisico."
   },
   {
     id: "ranged",
     title: "Distancia",
     shortTitle: "A.D.",
-    description: "Prioriza armas a distancia y cálculos basados en Destreza."
+    description: "Prioriza armas a distancia y calculos basados en Destreza."
   },
   {
     id: "magic",
-    title: "Magia / Canalización",
-    shortTitle: "Canalización",
-    description: "Prioriza baritas, báculos, focos y armas con bonificación lunar."
+    title: "Magia / Canalizacion",
+    shortTitle: "Canalizacion",
+    description: "Prioriza baritas, baculos, focos y armas con bonificacion lunar."
   },
   {
     id: "performance",
-    title: "Instrumento / Interpretación",
-    shortTitle: "Interpretación",
+    title: "Instrumento / Interpretacion",
+    shortTitle: "Interpretacion",
     description: "Prioriza instrumentos y resoluciones sociales potenciadas."
   }
 ];
+
+export const DEFENSIVE_ORIENTATION_DEFINITIONS = [
+  {
+    id: "resistance",
+    title: "Resistencia",
+    shortTitle: "Resistencia",
+    description: "Prioriza armaduras y escudos pesados, mitigacion y defensa fija."
+  },
+  {
+    id: "evasion",
+    title: "Esquivar",
+    shortTitle: "Esquivar",
+    description: "Prioriza piezas ligeras que no contradicen una defensa basada en evasion."
+  }
+];
+
+export const ORIENTATION_DEFINITIONS = OFFENSIVE_ORIENTATION_DEFINITIONS;
 
 export const STEP_DEFINITIONS = [
   { id: 1, key: "identity", title: "Identidad" },
@@ -51,7 +68,7 @@ export const STEP_DEFINITIONS = [
   { id: 4, key: "generalVirtues", title: "Virtudes generales" },
   { id: 5, key: "lunarVirtues", title: "Virtudes lunares" },
   { id: 6, key: "dotes", title: "Dotes" },
-  { id: 7, key: "orientation", title: "Orientación" },
+  { id: 7, key: "orientation", title: "Orientacion" },
   { id: 8, key: "equipment", title: "Equipo" },
   { id: 9, key: "summary", title: "Resumen" }
 ];
@@ -65,22 +82,22 @@ export const GLOSSARY = [
   {
     id: "defensas-fijas",
     title: "Resistencia y Esquivar",
-    text: "Son defensas fijas derivadas. Resistencia usa Físico + armadura + escudo + 10. Esquivar usa Destreza + armadura ligera o especial + escudo + 10."
+    text: "Son defensas fijas derivadas. Resistencia usa Fisico + armadura + escudo + 10. Esquivar usa Destreza + armadura ligera o especial + escudo + 10."
   },
   {
     id: "salvaciones",
     title: "Salvaciones Activas",
-    text: "Fortaleza, Reflejos, Voluntad y Carácter son tiradas activas. Cada una usa su atributo base más el valor racial fijo correspondiente."
+    text: "Fortaleza, Reflejos, Voluntad y Caracter son tiradas activas. Cada una usa su atributo base mas el valor racial fijo correspondiente."
   },
   {
     id: "dc-lunar",
     title: "DC Lunar",
-    text: "La dificultad base de una virtud lunar es 10 + Nivel + Nivel Mágico o Nivel Maldito, según la luna usada."
+    text: "La dificultad base de una virtud lunar es 10 + Nivel + Nivel Magico o Nivel Maldito, segun la luna usada."
   },
   {
     id: "virtudes-generales",
     title: "Virtudes Generales",
-    text: "Técnica, Erudición y Dominio son el pool inicial que reparte cada raza. En creación no pueden superar 3 puntos por virtud."
+    text: "Tecnica, Erudicion y Dominio son el pool inicial que reparte cada raza. En creacion no pueden superar 3 puntos por virtud."
   }
 ];
 
@@ -89,7 +106,7 @@ export const RACE_DEFINITIONS = [
     id: "humanos",
     name: "Humanos",
     title: "El Aliento Despierta",
-    description: "Equilibrio entre Magia y Maldición; adaptables y con fe indomable.",
+    description: "Equilibrio entre Magia y Maldicion; adaptables y con fe indomable.",
     lunarMode: "dual",
     lunarChoices: null,
     baseAttributes: { FIS: 1, DES: 1, SOC: 2, MEN: 1 },
@@ -102,7 +119,7 @@ export const RACE_DEFINITIONS = [
     lunarVirtueLimit: 4,
     healthDie: "d8",
     notes: [
-      "Los únicos que comienzan con Nivel Mágico 1 y Nivel Maldito 1.",
+      "Los unicos que comienzan con Nivel Magico 1 y Nivel Maldito 1.",
       "Pueden elegir virtudes iniciales azules y rojas."
     ]
   },
@@ -110,11 +127,11 @@ export const RACE_DEFINITIONS = [
     id: "antropeltis",
     name: "Antropeltis",
     title: "Hijos del Instinto",
-    description: "Canalizan la energía viva de Kepler; eligen Céfidon o Ultharia al inicio.",
+    description: "Canalizan la energia viva de Kepler; eligen Cefidon o Ultharia al inicio.",
     lunarMode: "choice",
     lunarChoices: {
       azul: {
-        title: "Céfidon",
+        title: "Cefidon",
         levels: { magico: 1, maldito: 0 },
         description: "Acceso inicial a Luna Azul."
       },
@@ -142,7 +159,7 @@ export const RACE_DEFINITIONS = [
     id: "ithariis",
     name: "Ithariis",
     title: "Los Hijos del Coloso",
-    description: "Dominadores forjados en Maldición Roja y tecnología viva.",
+    description: "Dominadores forjados en Maldicion Roja y tecnologia viva.",
     lunarMode: "fixed",
     lunarChoices: null,
     baseAttributes: { FIS: 1, DES: 2, SOC: 1, MEN: 2 },
@@ -156,12 +173,12 @@ export const RACE_DEFINITIONS = [
     healthDie: "d8",
     notes: [
       "No tienen acceso inicial a Luna Azul.",
-      "Su ataque base favorece la precisión a distancia."
+      "Su ataque base favorece la precision a distancia."
     ]
   },
   {
     id: "elfen",
-    name: "Elfen’s",
+    name: "Elfen's",
     title: "La Gracia Suspendida",
     description: "Nacidos bajo la Luna Azul, guardianes del equilibrio elemental.",
     lunarMode: "fixed",
@@ -177,14 +194,14 @@ export const RACE_DEFINITIONS = [
     healthDie: "d6",
     notes: [
       "Acceso inicial exclusivo a Luna Azul.",
-      "Tienen la movilidad más alta del conjunto base."
+      "Tienen la movilidad mas alta del conjunto base."
     ]
   },
   {
     id: "zwerges",
     name: "Zwerge",
     title: "El Eco de la Forja Maldita",
-    description: "Forjados en la Maldición Roja; maestros del sacrificio y la creación.",
+    description: "Forjados en la Maldicion Roja; maestros del sacrificio y la creacion.",
     lunarMode: "fixed",
     lunarChoices: null,
     baseAttributes: { FIS: 2, DES: 1, SOC: 1, MEN: 1 },
@@ -198,23 +215,23 @@ export const RACE_DEFINITIONS = [
     healthDie: "d12",
     notes: [
       "Acceso inicial exclusivo a Luna Roja.",
-      "Tienen la Salud Base y la Fortaleza racial más altas."
+      "Tienen la Salud Base y la Fortaleza racial mas altas."
     ]
   },
   {
     id: "roboticos",
-    name: "Robóticos",
-    title: "Ecos en la Chispa Vacía",
-    description: "Almas atadas al metal; deben elegir Núcleo Azul o Núcleo Rojo.",
+    name: "Roboticos",
+    title: "Ecos en la Chispa Vacia",
+    description: "Almas atadas al metal; deben elegir Nucleo Azul o Nucleo Rojo.",
     lunarMode: "choice",
     lunarChoices: {
       azul: {
-        title: "Núcleo Azul",
+        title: "Nucleo Azul",
         levels: { magico: 1, maldito: 0 },
         description: "Activa acceso inicial a Luna Azul."
       },
       roja: {
-        title: "Núcleo Rojo",
+        title: "Nucleo Rojo",
         levels: { magico: 0, maldito: 1 },
         description: "Activa acceso inicial a Luna Roja."
       }
@@ -230,7 +247,7 @@ export const RACE_DEFINITIONS = [
     healthDie: "d10",
     notes: [
       "Deben elegir senda lunar antes de ver virtudes iniciales.",
-      "Su combinación racial prioriza Físico y Carácter."
+      "Su combinacion racial prioriza Fisico y Caracter."
     ]
   }
 ];

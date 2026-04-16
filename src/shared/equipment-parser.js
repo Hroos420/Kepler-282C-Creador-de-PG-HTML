@@ -23,12 +23,12 @@ const SECTION_ORDER = [
   },
   {
     id: "focus",
-    title: "Baritas y Báculos",
-    anchor: "\nBaritas y Báculos"
+    title: "Baritas y Baculos",
+    anchor: "\nBaritas y Báculos Mágicos o Malditos"
   },
   {
     id: "instrument",
-    title: "Instrumentos de Interpretación",
+    title: "Instrumentos de Interpretacion",
     anchor: "\nInstrumentos de Interpretación"
   }
 ];
@@ -102,45 +102,73 @@ function parseItem(sectionId, blockText) {
   const range = extractLine(blockText, "Alcance:");
   const attackBonus = numberFromText(extractLine(blockText, "Bonus al Ataque:"));
   const lunarBonusText =
-    extractLine(blockText, "Bonus Mágico o Maldito:") || extractLine(blockText, "Bonus al Ataque con Virtud Mágica o Maldita:");
+    extractLine(blockText, "Bonus MÃ¡gico o Maldito:") || extractLine(blockText, "Bonus al Ataque con Virtud MÃ¡gica o Maldita:");
   const defensePair = extractLine(blockText, "Bonus a la Resistencia o a la Esquiva:");
-  const damage = extractLine(blockText, "Daño:");
+  const damage = extractLine(blockText, "DaÃ±o:");
   const ability = extractLine(blockText, "Habilidad:");
-  const description = extractLine(blockText, "Descripción:");
-  const reduction = numberFromText(extractLine(blockText, "Reducción de Daño:"));
+  const description = extractLine(blockText, "DescripciÃ³n:");
+  const reduction = numberFromText(extractLine(blockText, "ReducciÃ³n de DaÃ±o:"));
   const movementPenalty = numberFromText(extractLine(blockText, "Penalizador al Movimiento:"));
 
-  const lunarAffinity = /Roja/i.test(lunarBonusText) || /\[MALDITA\]/i.test(name) ? "roja" : /Azul/i.test(lunarBonusText) || /\[MÁGICA\]/i.test(name) ? "azul" : "";
+  const lunarAffinity = /Roja/i.test(lunarBonusText) || /\[MALDITA\]/i.test(name) ? "roja" : /Azul/i.test(lunarBonusText) || /\[[^\]]*GICA\]/i.test(name) ? "azul" : "";
   const lunarBonus = numberFromText(lunarBonusText);
   const dodgeBonus = /Esquiva/i.test(defensePair) ? numberFromText(defensePair) : 0;
   const resistanceBonus = /Resistencia/i.test(defensePair) ? numberFromText(defensePair) : 0;
+  const subtype = rawType || getDefaultType(sectionId);
+  const offensiveOrientations = resolveOffensiveOrientations(sectionId, lunarBonus);
+  const defensiveOrientation = resolveDefensiveOrientation(sectionId, resistanceBonus, dodgeBonus, reduction, movementPenalty);
+  const offensiveOrientationValid = offensiveOrientations.map(mapOffensiveOrientationCode);
+  const defensiveOrientationValid = mapDefensiveOrientationCode(defensiveOrientation);
+  const compatibilities = {
+    offensiveOrientations,
+    offensiveOrientationValid,
+    defensiveOrientation,
+    defensiveOrientationValid,
+    lunarAccess: lunarAffinity ? [lunarAffinity] : []
+  };
+  const restrictions = lunarAffinity ? [`requires_luna_${lunarAffinity}`] : [];
 
-  const item = {
+  return {
     id: `${sectionId}-${slugify(name)}`,
     name,
     category: sectionId,
-    type: rawType || getDefaultType(sectionId),
+    mainCategory: sectionId,
+    subtype,
+    type: subtype,
+    tags: buildTags(sectionId, subtype, lunarAffinity, offensiveOrientations, defensiveOrientation),
+    offensiveOrientations,
+    offensiveOrientationValid,
+    defensiveOrientation,
+    defensiveOrientationValid,
     rarity,
     range,
+    bonus: {
+      attack: attackBonus,
+      lunar: lunarBonus,
+      resistance: resistanceBonus,
+      dodge: dodgeBonus,
+      damageReduction: reduction,
+      movementPenalty
+    },
     attackBonus,
     lunarBonus,
     lunarBonusText,
     lunarAffinity,
     damage,
+    abilities: compact([ability]),
     ability,
     description,
     resistanceBonus,
     dodgeBonus,
     damageReduction: reduction,
     movementPenalty,
-    rawText: blockText,
-    tags: buildTags(sectionId, rawType, lunarAffinity)
+    compatibilities,
+    restrictions,
+    rawText: blockText
   };
-
-  return item;
 }
 
-function buildTags(sectionId, rawType, lunarAffinity) {
+function buildTags(sectionId, rawType, lunarAffinity, offensiveOrientations, defensiveOrientation) {
   const tags = [sectionId];
 
   if (lunarAffinity) {
@@ -157,21 +185,127 @@ function buildTags(sectionId, rawType, lunarAffinity) {
 
   if (sectionId === "focus") {
     tags.push("magic");
+    tags.push("focus");
   }
 
   if (sectionId === "instrument") {
     tags.push("performance");
+    tags.push("instrument");
   }
 
   if (sectionId === "melee" || sectionId === "ranged") {
     tags.push("weapon");
   }
 
+  if (sectionId === "armor") {
+    tags.push("armor");
+  }
+
+  if (sectionId === "shield") {
+    tags.push("shield");
+  }
+
   if (sectionId === "focus" || sectionId === "instrument" || lunarAffinity) {
     tags.push("lunar-support");
   }
 
+  if (offensiveOrientations.includes("melee")) {
+    tags.push("offensive_cc");
+  }
+
+  if (offensiveOrientations.includes("ranged")) {
+    tags.push("offensive_ranged");
+  }
+
+  if (offensiveOrientations.includes("magic")) {
+    tags.push("offensive_magic");
+  }
+
+  if (offensiveOrientations.includes("performance")) {
+    tags.push("offensive_instrument");
+  }
+
+  if (defensiveOrientation === "resistance") {
+    tags.push("defense_resistance");
+  }
+
+  if (defensiveOrientation === "evasion") {
+    tags.push("defense_evasion");
+  }
+
+  if (defensiveOrientation === "neutral") {
+    tags.push("defense_neutral");
+  }
+
   return [...new Set(tags)];
+}
+
+function resolveOffensiveOrientations(sectionId, lunarBonus) {
+  const orientations = [];
+
+  if (sectionId === "melee") {
+    orientations.push("melee");
+  }
+
+  if (sectionId === "ranged") {
+    orientations.push("ranged");
+  }
+
+  if (sectionId === "focus") {
+    orientations.push("magic");
+  }
+
+  if (sectionId === "instrument") {
+    orientations.push("performance");
+  }
+
+  if ((sectionId === "melee" || sectionId === "ranged") && lunarBonus > 0) {
+    orientations.push("magic");
+  }
+
+  return [...new Set(orientations)];
+}
+
+function resolveDefensiveOrientation(sectionId, resistanceBonus, dodgeBonus, damageReduction, movementPenalty) {
+  if (!["armor", "shield"].includes(sectionId)) {
+    return "neutral";
+  }
+
+  if (movementPenalty > 0 || damageReduction > 0 || resistanceBonus > dodgeBonus) {
+    return "resistance";
+  }
+
+  if (dodgeBonus >= resistanceBonus) {
+    return "evasion";
+  }
+
+  return "neutral";
+}
+
+function mapOffensiveOrientationCode(orientation) {
+  switch (orientation) {
+    case "melee":
+      return "cc";
+    case "ranged":
+      return "distancia";
+    case "magic":
+      return "magia";
+    case "performance":
+      return "instrumento";
+    default:
+      return "neutral";
+  }
+}
+
+function mapDefensiveOrientationCode(orientation) {
+  switch (orientation) {
+    case "resistance":
+      return "resistencia";
+    case "evasion":
+      return "esquivar";
+    default:
+      return "neutral";
+  }
 }
 
 function getDefaultType(sectionId) {

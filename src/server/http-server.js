@@ -5,7 +5,7 @@ import { URL } from "node:url";
 
 import { loadCatalogs } from "./catalog-loader.js";
 import { CharacterRepository } from "./repository.js";
-import { buildPreview } from "./rules-engine.js";
+import { applyDraftAction, buildPreview } from "./rules-engine.js";
 import { normalizeDraft } from "../shared/draft.js";
 
 const MIME_TYPES = {
@@ -66,6 +66,19 @@ async function handleApiRequest(request, response, requestUrl, repository, catal
   if (request.method === "POST" && pathname === "/api/preview") {
     const body = await readJsonBody(request);
     respondJson(response, 200, buildPreview(body?.draft, catalogs));
+    return;
+  }
+
+  if (request.method === "POST" && pathname === "/api/actions") {
+    const body = await readJsonBody(request);
+    try {
+      respondJson(response, 200, applyDraftAction(body?.draft, catalogs, body?.action));
+    } catch (error) {
+      respondJson(response, 400, {
+        error: "action_error",
+        message: error instanceof Error ? error.message : "No fue posible aplicar la accion del creador."
+      });
+    }
     return;
   }
 
@@ -200,7 +213,8 @@ function serializeCatalogs(catalogs) {
 }
 
 async function serveStaticAsset(requestPath, response) {
-  const sanitizedPath = (requestPath === "/" ? "index.html" : requestPath).replace(/^\/+/, "");
+  const decodedPath = decodeURIComponent(requestPath === "/" ? "/index.html" : requestPath);
+  const sanitizedPath = decodedPath.replace(/^\/+/, "");
   const publicPath = path.join(process.cwd(), "public", sanitizedPath);
   const assetPath = path.join(process.cwd(), sanitizedPath);
   const candidates = [publicPath, assetPath];

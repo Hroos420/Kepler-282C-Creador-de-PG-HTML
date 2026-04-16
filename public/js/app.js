@@ -3,6 +3,7 @@ import { renderApp } from "./render.js";
 
 const root = document.getElementById("app");
 const importInput = document.getElementById("import-file");
+const ACTIVE_RACE_STORAGE_KEY = "kepler_active_race";
 
 const state = {
   loading: true,
@@ -10,6 +11,7 @@ const state = {
   characters: [],
   preview: null,
   draft: createDraft(),
+  activeRaceId: "",
   editingCharacterId: "",
   autosaveEnabled: readAutosavePreference(),
   autosaveMeta: null,
@@ -38,6 +40,8 @@ document.addEventListener("click", async (event) => {
       case "new-character":
         state.editingCharacterId = "";
         state.draft = createDraft();
+        state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, readActiveRacePreference(), state.activeRaceId);
+        persistActiveRace();
         await refreshPreview({ immediate: true });
         break;
       case "clear-autosave":
@@ -50,14 +54,18 @@ document.addEventListener("click", async (event) => {
         importInput.value = "";
         importInput.click();
         break;
-      case "select-race":
-        selectRace(button.dataset.race);
+      case "activate-race":
+        activateRace(button.dataset.race);
+        break;
+      case "confirm-race":
+        confirmActiveRace();
         break;
       case "select-lunar-choice":
         state.draft.lunarChoice = button.dataset.choice || "";
         state.draft.lunarVirtueIds = [];
         state.draft.selectedDoteIds = [];
-        state.draft.equipment.primaryId = "";
+        clearOffensiveEquipment();
+        clearDefensiveEquipment();
         queuePreview();
         break;
       case "select-extra-attribute":
@@ -72,14 +80,39 @@ document.addEventListener("click", async (event) => {
         toggleItemInArray("selectedDoteIds", button.dataset.id, state.preview.summary.dotes.freeLimit);
         queuePreview();
         break;
-      case "select-orientation":
-        state.draft.orientation = button.dataset.id || "";
-        state.draft.equipment.primaryId = "";
+      case "select-offensive-orientation":
+        state.draft.offensiveOrientation = button.dataset.id || "";
+        clearOffensiveEquipment();
         queuePreview();
         break;
-      case "select-primary-equipment":
-        state.draft.equipment.primaryId = button.dataset.id || "";
+      case "select-defensive-orientation":
+        state.draft.defensiveOrientation = button.dataset.id || "";
+        clearDefensiveEquipment();
         queuePreview();
+        break;
+      case "randomize-primary":
+        await applyServerAction({ type: "randomize-primary" });
+        break;
+      case "reroll-primary":
+        await applyServerAction({ type: "randomize-primary", reroll: true });
+        break;
+      case "randomize-armor":
+        await applyServerAction({ type: "randomize-armor" });
+        break;
+      case "reroll-armor":
+        await applyServerAction({ type: "randomize-armor", reroll: true });
+        break;
+      case "randomize-shield":
+        await applyServerAction({ type: "randomize-shield" });
+        break;
+      case "reroll-shield":
+        await applyServerAction({ type: "randomize-shield", reroll: true });
+        break;
+      case "roll-health":
+        await applyServerAction({ type: "roll-creation-health" });
+        break;
+      case "reroll-health":
+        await applyServerAction({ type: "roll-creation-health", reroll: true });
         break;
       case "save-character":
         await saveCharacter();
@@ -103,7 +136,7 @@ document.addEventListener("click", async (event) => {
         break;
     }
   } catch (error) {
-    flash("error", error?.payload?.message || error.message || "Acción no completada.");
+    flash("error", error?.payload?.message || error.message || "Accion no completada.");
     render();
   }
 });
@@ -126,7 +159,58 @@ document.addEventListener("input", (event) => {
 
   const value = event.target.type === "number" ? Number(event.target.value || 0) : event.target.value;
   setByPath(state.draft, field, value);
-  queuePreview();
+  queuePreview(getPreviewDelay(event.target));
+});
+
+document.addEventListener("keydown", (event) => {
+  const tab = event.target.closest('[role="tab"][data-action="activate-race"]');
+  if (!tab) {
+    return;
+  }
+
+  const raceTabs = [...document.querySelectorAll('[role="tab"][data-action="activate-race"]')];
+  if (raceTabs.length === 0) {
+    return;
+  }
+
+  const currentIndex = raceTabs.indexOf(tab);
+  if (currentIndex < 0) {
+    return;
+  }
+
+  const moveFocusToRace = (index) => {
+    const normalizedIndex = ((index % raceTabs.length) + raceTabs.length) % raceTabs.length;
+    const nextRaceId = raceTabs[normalizedIndex]?.dataset.race;
+    if (!nextRaceId) {
+      return;
+    }
+    event.preventDefault();
+    activateRace(nextRaceId, { focusTab: true });
+  };
+
+  switch (event.key) {
+    case "ArrowUp":
+    case "ArrowLeft":
+      moveFocusToRace(currentIndex - 1);
+      break;
+    case "ArrowDown":
+    case "ArrowRight":
+      moveFocusToRace(currentIndex + 1);
+      break;
+    case "Home":
+      moveFocusToRace(0);
+      break;
+    case "End":
+      moveFocusToRace(raceTabs.length - 1);
+      break;
+    case "Enter":
+    case " ":
+      event.preventDefault();
+      confirmActiveRace();
+      break;
+    default:
+      break;
+  }
 });
 
 importInput.addEventListener("change", async (event) => {
@@ -141,9 +225,11 @@ importInput.addEventListener("change", async (event) => {
     state.editingCharacterId = "";
     state.draft = normalizeImportedDraft(parsed);
     state.draft.ui.step = 1;
+    state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, state.draft.raceId, state.activeRaceId, readActiveRacePreference());
+    persistActiveRace();
     await refreshPreview({ immediate: true });
-    flash("success", "JSON importado en el editor. Revísalo y guarda cuando termine.");
-  } catch (error) {
+    flash("success", "JSON importado en el editor. Revisa la ficha y guarda cuando termine.");
+  } catch {
     flash("error", "No fue posible leer el JSON importado.");
     render();
   }
@@ -156,9 +242,11 @@ async function bootstrap() {
     state.characters = data.characters;
     state.autosaveMeta = data.autosave;
     state.draft = data.autosave?.draft || createDraft();
+    state.activeRaceId = resolveActiveRaceId(data.catalogs?.races, state.draft.raceId, readActiveRacePreference());
+    persistActiveRace();
     await refreshPreview({ immediate: true, silentMessage: true });
   } catch (error) {
-    flash("error", error.message || "No se pudo iniciar la aplicación.");
+    flash("error", error.message || "No se pudo iniciar la aplicacion.");
   } finally {
     state.loading = false;
     render();
@@ -166,14 +254,16 @@ async function bootstrap() {
 }
 
 function render() {
+  const focusState = captureFocusState();
   root.innerHTML = renderApp(state);
+  restoreFocusState(focusState);
 }
 
-function queuePreview() {
+function queuePreview(delay = 120) {
   clearTimeout(previewTimer);
   previewTimer = setTimeout(() => {
     refreshPreview({ immediate: true });
-  }, 120);
+  }, delay);
 }
 
 async function refreshPreview({ immediate = false, silentMessage = false } = {}) {
@@ -190,6 +280,8 @@ async function refreshPreview({ immediate = false, silentMessage = false } = {})
       step: currentStep
     }
   };
+  state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, state.activeRaceId, state.draft.raceId, readActiveRacePreference());
+  persistActiveRace();
   render();
 
   if (state.autosaveEnabled) {
@@ -198,6 +290,27 @@ async function refreshPreview({ immediate = false, silentMessage = false } = {})
 
   if (!silentMessage && immediate) {
     state.message = null;
+  }
+}
+
+async function applyServerAction(action) {
+  if (!state.catalogs) {
+    return;
+  }
+
+  const currentStep = state.draft.ui.step;
+  const response = await api.applyAction(state.draft, action);
+  state.preview = response.preview;
+  state.draft = {
+    ...response.draft,
+    ui: {
+      step: currentStep
+    }
+  };
+  render();
+
+  if (state.autosaveEnabled) {
+    queueAutosave();
   }
 }
 
@@ -214,12 +327,41 @@ function queueAutosave() {
   }, 800);
 }
 
+function activateRace(raceId, options = {}) {
+  state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, raceId, state.activeRaceId, state.draft.raceId);
+  persistActiveRace();
+  render();
+
+  if (options.focusTab) {
+    window.requestAnimationFrame(() => {
+      const activeTab = document.getElementById(`race-tab-${state.activeRaceId}`);
+      activeTab?.focus({ preventScroll: true });
+    });
+  }
+}
+
+function confirmActiveRace() {
+  const nextRaceId = resolveActiveRaceId(state.catalogs?.races, state.activeRaceId, state.draft.raceId);
+  if (!nextRaceId) {
+    return;
+  }
+
+  if (state.draft.raceId === nextRaceId) {
+    flash("info", "La raza activa ya esta confirmada.");
+    return;
+  }
+
+  selectRace(nextRaceId);
+  flash("success", `Raza confirmada: ${findRaceById(nextRaceId)?.name || nextRaceId}`);
+}
+
 function selectRace(raceId) {
   const preserved = {
     name: state.draft.name,
     notes: state.draft.notes,
     level: state.draft.level
   };
+
   state.draft = {
     ...createDraft(),
     ...preserved,
@@ -228,6 +370,8 @@ function selectRace(raceId) {
       step: state.draft.ui.step
     }
   };
+  state.activeRaceId = raceId;
+  persistActiveRace();
   queuePreview();
 }
 
@@ -237,7 +381,7 @@ function toggleItemInArray(key, id, limit) {
     current.delete(id);
   } else {
     if (current.size >= limit) {
-      flash("warning", `No puedes seleccionar más de ${limit} opción(es) en este paso.`);
+      flash("warning", `No puedes seleccionar mas de ${limit} opcion(es) en este paso.`);
       render();
       return;
     }
@@ -246,23 +390,41 @@ function toggleItemInArray(key, id, limit) {
   state.draft[key] = [...current];
 }
 
+function clearOffensiveEquipment() {
+  state.draft.equipment.primaryId = "";
+  state.draft.equipment.primaryInitialId = "";
+  state.draft.equipment.primaryRerollsUsed = 0;
+}
+
+function clearDefensiveEquipment() {
+  state.draft.equipment.armorId = "";
+  state.draft.equipment.armorInitialId = "";
+  state.draft.equipment.armorRerollsUsed = 0;
+  state.draft.equipment.shieldId = "";
+  state.draft.equipment.shieldInitialId = "";
+  state.draft.equipment.shieldRerollsUsed = 0;
+}
+
 async function saveCharacter() {
   const response = state.editingCharacterId
     ? await api.updateCharacter(state.editingCharacterId, state.draft)
     : await api.createCharacter(state.draft);
 
+  const wasEditing = Boolean(state.editingCharacterId);
   state.editingCharacterId = response.id;
   state.autosaveMeta = null;
   const list = await api.listCharacters();
   state.characters = list.characters;
   await loadCharacter(response.id, { announce: false });
-  flash("success", state.editingCharacterId ? "Personaje guardado correctamente." : "Personaje creado correctamente.");
+  flash("success", wasEditing ? "Personaje guardado correctamente." : "Personaje creado correctamente.");
 }
 
 async function loadCharacter(id, options = {}) {
   const character = await api.getCharacter(id);
   state.editingCharacterId = character.id;
   state.draft = character.draft;
+  state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, character.draft.raceId, state.activeRaceId);
+  persistActiveRace();
   await refreshPreview({ immediate: true, silentMessage: true });
   if (options.announce !== false) {
     flash("info", `Cargado: ${character.name}`);
@@ -283,12 +445,15 @@ async function deleteCharacter(id) {
   if (!confirmed) {
     return;
   }
+
   await api.deleteCharacter(id);
   const list = await api.listCharacters();
   state.characters = list.characters;
   if (state.editingCharacterId === id) {
     state.editingCharacterId = "";
     state.draft = createDraft();
+    state.activeRaceId = resolveActiveRaceId(state.catalogs?.races, readActiveRacePreference());
+    persistActiveRace();
     await refreshPreview({ immediate: true, silentMessage: true });
   }
   flash("info", "Personaje eliminado.");
@@ -345,7 +510,7 @@ function setByPath(target, path, value) {
 
 function createDraft() {
   return {
-    version: 1,
+    version: 2,
     name: "",
     raceId: "",
     notes: "",
@@ -355,11 +520,24 @@ function createDraft() {
     generalVirtues: {},
     lunarVirtueIds: [],
     selectedDoteIds: [],
-    orientation: "",
+    offensiveOrientation: "",
+    defensiveOrientation: "",
     equipment: {
       primaryId: "",
+      primaryInitialId: "",
+      primaryRerollsUsed: 0,
       armorId: "",
-      shieldId: ""
+      armorInitialId: "",
+      armorRerollsUsed: 0,
+      shieldId: "",
+      shieldInitialId: "",
+      shieldRerollsUsed: 0
+    },
+    creationHealth: {
+      die: "",
+      initialValue: 0,
+      value: 0,
+      rerollsUsed: 0
     },
     ui: {
       step: 1
@@ -376,6 +554,39 @@ function readAutosavePreference() {
   }
 }
 
+function readActiveRacePreference() {
+  try {
+    return localStorage.getItem(ACTIVE_RACE_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function persistActiveRace() {
+  try {
+    if (state.activeRaceId) {
+      localStorage.setItem(ACTIVE_RACE_STORAGE_KEY, state.activeRaceId);
+    }
+  } catch {
+    // noop
+  }
+}
+
+function resolveActiveRaceId(races, ...candidates) {
+  const available = Array.isArray(races) ? races.map((race) => race.id) : [];
+  for (const candidate of candidates) {
+    const normalized = String(candidate || "").trim();
+    if (available.includes(normalized)) {
+      return normalized;
+    }
+  }
+  return available[0] || "";
+}
+
+function findRaceById(raceId) {
+  return state.catalogs?.races?.find((race) => race.id === raceId) || null;
+}
+
 function flash(type, text) {
   state.message = { type, text };
   render();
@@ -384,4 +595,73 @@ function flash(type, text) {
     state.message = null;
     render();
   }, 3500);
+}
+
+function getPreviewDelay(element) {
+  if (!element) {
+    return 120;
+  }
+
+  if (element.tagName === "TEXTAREA") {
+    return 350;
+  }
+
+  if (element.tagName === "INPUT" && ["text", "search", "email", "url"].includes(element.type || "text")) {
+    return 250;
+  }
+
+  return 120;
+}
+
+function captureFocusState() {
+  const activeElement = document.activeElement;
+
+  if (!activeElement || !root.contains(activeElement)) {
+    return null;
+  }
+
+  const field = activeElement.dataset?.field;
+  if (!field) {
+    return null;
+  }
+
+  return {
+    field,
+    selectionStart: typeof activeElement.selectionStart === "number" ? activeElement.selectionStart : null,
+    selectionEnd: typeof activeElement.selectionEnd === "number" ? activeElement.selectionEnd : null,
+    scrollY: window.scrollY
+  };
+}
+
+function restoreFocusState(focusState) {
+  if (!focusState?.field) {
+    return;
+  }
+
+  const selector = `[data-field="${escapeAttributeValue(focusState.field)}"]`;
+  const nextElement = root.querySelector(selector);
+  if (!nextElement) {
+    return;
+  }
+
+  nextElement.focus({ preventScroll: true });
+
+  if (
+    typeof focusState.selectionStart === "number" &&
+    typeof focusState.selectionEnd === "number" &&
+    typeof nextElement.setSelectionRange === "function"
+  ) {
+    const valueLength = typeof nextElement.value === "string" ? nextElement.value.length : 0;
+    const start = Math.min(focusState.selectionStart, valueLength);
+    const end = Math.min(focusState.selectionEnd, valueLength);
+    nextElement.setSelectionRange(start, end);
+  }
+
+  if (typeof focusState.scrollY === "number") {
+    window.scrollTo({ top: focusState.scrollY, left: window.scrollX });
+  }
+}
+
+function escapeAttributeValue(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }

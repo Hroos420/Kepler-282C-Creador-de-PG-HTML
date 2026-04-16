@@ -15,11 +15,11 @@ function makeTempRepository() {
   };
 }
 
-test("guardar y cargar personaje desde SQLite mantiene la ficha", () => {
+test("guardar y cargar personaje mantiene orientaciones, randoms y vida extra persistidos", () => {
   const { dir, repository } = makeTempRepository();
   try {
     const saved = repository.saveCharacter({
-      version: 1,
+      version: 2,
       name: "Nyra",
       raceId: "humanos",
       notes: "Prueba",
@@ -29,20 +29,36 @@ test("guardar y cargar personaje desde SQLite mantiene la ficha", () => {
       generalVirtues: { acrobacias: 3 },
       lunarVirtueIds: ["misil-arcano"],
       selectedDoteIds: ["sincronia-manada"],
-      orientation: "magic",
+      offensiveOrientation: "magic",
+      defensiveOrientation: "evasion",
       equipment: {
-        primaryId: "focus-v000",
-        armorId: "",
-        shieldId: ""
+        primaryId: "focus-vara-de-basalto-vivo-magica",
+        primaryInitialId: "focus-vara-de-basalto-vivo-magica",
+        primaryRerollsUsed: 1,
+        armorId: "armor-chaleco-de-cuero-de-marea",
+        armorInitialId: "armor-chaleco-de-cuero-de-marea",
+        armorRerollsUsed: 0,
+        shieldId: "shield-media-luna-humana",
+        shieldInitialId: "shield-media-luna-humana",
+        shieldRerollsUsed: 1
+      },
+      creationHealth: {
+        die: "d8",
+        initialValue: 3,
+        value: 6,
+        rerollsUsed: 2
       },
       ui: { step: 9 }
     });
 
     const loaded = repository.getCharacter(saved.id);
     assert.equal(loaded.name, "Nyra");
-    assert.equal(loaded.draft.raceId, "humanos");
-    assert.equal(loaded.draft.extraAttribute, "FIS");
-    assert.deepEqual(loaded.draft.generalVirtues, { acrobacias: 3 });
+    assert.equal(loaded.draft.offensiveOrientation, "magic");
+    assert.equal(loaded.draft.defensiveOrientation, "evasion");
+    assert.equal(loaded.draft.equipment.primaryRerollsUsed, 1);
+    assert.equal(loaded.draft.equipment.shieldRerollsUsed, 1);
+    assert.equal(loaded.draft.creationHealth.value, 6);
+    assert.equal(loaded.draft.creationHealth.rerollsUsed, 2);
   } finally {
     repository.close();
     fs.rmSync(dir, { recursive: true, force: true });
