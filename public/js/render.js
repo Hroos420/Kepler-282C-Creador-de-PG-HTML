@@ -268,6 +268,10 @@ function renderIdentityStep(state) {
           aria-labelledby="race-tab-${activeRace.id}"
           aria-live="polite"
         >
+          <div class="race-hero-media">
+            ${renderRaceHeroImage(activeRace)}
+          </div>
+
           <div class="race-hero-copy">
             <div class="chip-row">
               <span class="chip">${escapeHtml(activeRace.loreTitle || activeRace.title || activeRace.name)}</span>
@@ -312,10 +316,6 @@ function renderIdentityStep(state) {
                 ${isConfirmed ? "Raza confirmada" : "Seleccionar esta raza"}
               </button>
             </div>
-          </div>
-
-          <div class="race-hero-media">
-            ${renderRaceHeroImage(activeRace)}
           </div>
         </section>
       </section>
@@ -924,7 +924,14 @@ function renderRaceHeroImage(race) {
     return `
       <div class="race-hero-frame">
         <span class="race-image-badge">${escapeHtml(imageBadge)}</span>
-        <img src="${race.imagePath}" alt="${escapeHtml(race.imageAlt || race.name)}" class="race-hero-image" decoding="async" />
+        <div class="race-banner-copy" aria-hidden="true">
+          <span class="eyebrow">Linaje activo</span>
+          <strong>${escapeHtml(race.name)}</strong>
+          <span>${escapeHtml(race.loreTitle || race.title || race.moonAccessLabel || "")}</span>
+        </div>
+        <div class="race-hero-image-wrap">
+          <img src="${race.imagePath}" alt="${escapeHtml(race.imageAlt || race.name)}" class="race-hero-image" decoding="async" />
+        </div>
       </div>
     `;
   }

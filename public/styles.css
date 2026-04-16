@@ -682,7 +682,8 @@ select:focus-visible {
 
 .race-hero-panel {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
   min-height: 560px;
   background:
     radial-gradient(circle at top right, color-mix(in srgb, var(--race-accent-secondary) 22%, transparent) 0%, transparent 38%),
@@ -708,7 +709,7 @@ select:focus-visible {
 }
 
 .race-hero-copy {
-  padding: 28px;
+  padding: 22px 28px 28px;
   display: grid;
   align-content: start;
   gap: 18px;
@@ -727,7 +728,7 @@ select:focus-visible {
 
 .race-hero-summary {
   color: var(--muted);
-  max-width: 62ch;
+  max-width: 72ch;
   font-size: 1rem;
 }
 
@@ -817,22 +818,33 @@ select:focus-visible {
 }
 
 .race-hero-media {
-  padding: 24px;
+  padding: 22px 22px 0;
   display: grid;
-  align-items: stretch;
+  align-items: center;
 }
 
 .race-hero-frame {
   position: relative;
-  min-height: 100%;
-  border-radius: 24px;
-  overflow: hidden;
+  min-height: clamp(240px, 28vw, 360px);
+  width: 100%;
+  padding: 18px;
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    radial-gradient(circle at top, color-mix(in srgb, var(--race-accent) 28%, transparent) 0%, transparent 52%),
-    linear-gradient(180deg, rgba(14, 21, 31, 0.92) 0%, rgba(5, 10, 16, 0.98) 100%);
+    radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--race-accent-secondary) 24%, transparent) 0%, transparent 26%),
+    radial-gradient(circle at 18% 74%, color-mix(in srgb, var(--race-accent) 26%, transparent) 0%, transparent 34%),
+    linear-gradient(135deg, rgba(15, 24, 34, 0.96) 0%, rgba(10, 17, 25, 0.98) 52%, rgba(8, 13, 20, 1) 100%);
   display: grid;
   place-items: center;
+}
+
+.race-hero-frame::after {
+  content: "";
+  position: absolute;
+  inset: auto 18px 18px 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--race-accent-secondary) 46%, white 14%), transparent);
+  opacity: 0.75;
 }
 
 .race-image-badge {
@@ -853,12 +865,52 @@ select:focus-visible {
   color: color-mix(in srgb, white 82%, var(--race-accent-secondary) 18%);
 }
 
-.race-hero-image {
+.race-banner-copy {
+  position: absolute;
+  left: 18px;
+  right: auto;
+  bottom: 18px;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  max-width: min(52%, 340px);
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(7, 16, 24, 0.8), rgba(10, 18, 28, 0.58));
+  backdrop-filter: blur(12px);
+}
+
+.race-banner-copy strong,
+.race-banner-copy span {
+  margin: 0;
+}
+
+.race-banner-copy strong {
+  font-size: 1.05rem;
+}
+
+.race-banner-copy .eyebrow {
+  color: color-mix(in srgb, white 70%, var(--race-accent-secondary) 30%);
+}
+
+.race-hero-image-wrap {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 22px clamp(18px, 2.2vw, 28px) 26px;
+}
+
+.race-hero-image {
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: clamp(180px, 24vw, 300px);
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 20px 34px rgba(0, 0, 0, 0.34));
 }
 
 .race-hero-frame--placeholder {
@@ -909,8 +961,11 @@ select:focus-visible {
   }
 
   .race-hero-panel {
-    grid-template-columns: 1fr;
     min-height: 0;
+  }
+
+  .race-hero-frame {
+    min-height: clamp(220px, 34vw, 320px);
   }
 }
 
@@ -945,8 +1000,24 @@ select:focus-visible {
     padding: 18px;
   }
 
+  .race-hero-frame {
+    min-height: clamp(200px, 58vw, 280px);
+    padding: 14px;
+  }
+
+  .race-banner-copy {
+    left: 14px;
+    right: 14px;
+    max-width: none;
+    bottom: 14px;
+  }
+
+  .race-hero-image-wrap {
+    padding: 16px 10px 58px;
+  }
+
   .race-hero-image {
-    max-height: 380px;
+    max-height: min(30vh, 220px);
   }
 
   .race-confirm-bar {
