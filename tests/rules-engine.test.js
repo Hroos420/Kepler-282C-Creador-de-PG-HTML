@@ -25,7 +25,7 @@ function makeBaseDraft(overrides = {}) {
     lunarChoice: "",
     extraAttribute: "FIS",
     generalVirtues: { acrobacias: 3, percepcion: 3, diplomacia: 3, sigilo: 3 },
-    generalVirtueBonus: { category: "", die: "", initialValue: 0, value: 0, rerollsUsed: 0 },
+    generalVirtueBonus: { die: "", initialValue: 0, value: 0, rerollsUsed: 0 },
     lunarVirtueIds: ["misil-arcano", "sello-restitucion", "hueso-serrado", "senal-carronero"],
     selectedDoteIds: ["sincronia-manada"],
     offensiveOrientation: "magic",
@@ -34,11 +34,27 @@ function makeBaseDraft(overrides = {}) {
       primaryId: findItem((item) => item.category === "focus" && item.lunarAffinity === "azul")?.id || "",
       primaryInitialId: findItem((item) => item.category === "focus" && item.lunarAffinity === "azul")?.id || "",
       primaryRerollsUsed: 0,
-      armorId: findItem((item) => item.category === "armor" && item.defensiveOrientation === "evasion" && !item.lunarAffinity)?.id || "",
-      armorInitialId: findItem((item) => item.category === "armor" && item.defensiveOrientation === "evasion" && !item.lunarAffinity)?.id || "",
+      armorId: findItem((item) => {
+        const hasResistance = (item.bonus?.resistance || 0) > 0;
+        const hasDodge = (item.bonus?.dodge || 0) > 0;
+        return item.category === "armor" && (item.defensiveOrientation === "evasion" || (hasResistance && hasDodge)) && !item.lunarAffinity;
+      })?.id || "",
+      armorInitialId: findItem((item) => {
+        const hasResistance = (item.bonus?.resistance || 0) > 0;
+        const hasDodge = (item.bonus?.dodge || 0) > 0;
+        return item.category === "armor" && (item.defensiveOrientation === "evasion" || (hasResistance && hasDodge)) && !item.lunarAffinity;
+      })?.id || "",
       armorRerollsUsed: 0,
-      shieldId: findItem((item) => item.category === "shield" && item.defensiveOrientation === "evasion" && !item.lunarAffinity)?.id || "",
-      shieldInitialId: findItem((item) => item.category === "shield" && item.defensiveOrientation === "evasion" && !item.lunarAffinity)?.id || "",
+      shieldId: findItem((item) => {
+        const hasResistance = (item.bonus?.resistance || 0) > 0;
+        const hasDodge = (item.bonus?.dodge || 0) > 0;
+        return item.category === "shield" && (item.defensiveOrientation === "evasion" || (hasResistance && hasDodge)) && !item.lunarAffinity;
+      })?.id || "",
+      shieldInitialId: findItem((item) => {
+        const hasResistance = (item.bonus?.resistance || 0) > 0;
+        const hasDodge = (item.bonus?.dodge || 0) > 0;
+        return item.category === "shield" && (item.defensiveOrientation === "evasion" || (hasResistance && hasDodge)) && !item.lunarAffinity;
+      })?.id || "",
       shieldRerollsUsed: 0
     },
     creationHealth: {
@@ -236,8 +252,14 @@ test("El filtro defensivo separa pools de armadura y escudo por orientacion", ()
     catalogs
   );
 
-  assert.ok(evasionPreview.summary.equipment.defensive.armor.pool.every((item) => item.defensiveOrientation === "evasion"));
-  assert.ok(evasionPreview.summary.equipment.defensive.shield.pool.every((item) => item.defensiveOrientation === "evasion"));
+  const isCompatibleWithEvasion = (item) => {
+    const hasResistance = (item.bonus?.resistance || 0) > 0;
+    const hasDodge = (item.bonus?.dodge || 0) > 0;
+    return item.defensiveOrientation === "evasion" || (hasResistance && hasDodge);
+  };
+
+  assert.ok(evasionPreview.summary.equipment.defensive.armor.pool.every(isCompatibleWithEvasion));
+  assert.ok(evasionPreview.summary.equipment.defensive.shield.pool.every(isCompatibleWithEvasion));
 });
 
 test("La randomizacion de armadura y escudo solo usa pools compatibles y respeta un re-roll maximo", () => {

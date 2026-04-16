@@ -989,7 +989,15 @@ function defensiveBlockedReason(item, orientation, lunarState, category) {
     return category === "armor" ? "Solo se muestran armaduras en este bloque." : "Solo se muestran escudos en este bloque.";
   }
 
+  const resistanceBonus = item.bonus?.resistance || 0;
+  const dodgeBonus = item.bonus?.dodge || 0;
+  const hasBothBonuses = resistanceBonus > 0 && dodgeBonus > 0;
+
   if (item.defensiveOrientation === orientation) {
+    return "";
+  }
+
+  if (hasBothBonuses) {
     return "";
   }
 
