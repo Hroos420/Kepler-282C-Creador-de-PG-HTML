@@ -27,6 +27,12 @@ test("guardar y cargar personaje mantiene orientaciones, randoms y vida extra pe
       lunarChoice: "",
       extraAttribute: "FIS",
       generalVirtues: { acrobacias: 3 },
+      generalVirtueBonus: {
+        die: "d10",
+        initialValue: 4,
+        value: 7,
+        rerollsUsed: 1
+      },
       lunarVirtueIds: ["misil-arcano"],
       selectedDoteIds: ["sincronia-manada"],
       offensiveOrientation: "magic",
@@ -57,6 +63,8 @@ test("guardar y cargar personaje mantiene orientaciones, randoms y vida extra pe
     assert.equal(loaded.draft.defensiveOrientation, "evasion");
     assert.equal(loaded.draft.equipment.primaryRerollsUsed, 1);
     assert.equal(loaded.draft.equipment.shieldRerollsUsed, 1);
+    assert.equal(loaded.draft.generalVirtueBonus.value, 7);
+    assert.equal(loaded.draft.generalVirtueBonus.rerollsUsed, 1);
     assert.equal(loaded.draft.creationHealth.value, 6);
     assert.equal(loaded.draft.creationHealth.rerollsUsed, 2);
   } finally {

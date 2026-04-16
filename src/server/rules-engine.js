@@ -14,6 +14,7 @@ import { normalizeDraft, serializeDraft } from "../shared/draft.js";
 const PRIMARY_REROLL_LIMIT = 1;
 const ARMOR_REROLL_LIMIT = 1;
 const SHIELD_REROLL_LIMIT = 1;
+const GENERAL_VIRTUE_BONUS_REROLL_LIMIT = 2;
 const CREATION_HEALTH_REROLL_LIMIT = 3;
 
 const EMPTY_ITEM = {
@@ -63,7 +64,8 @@ export function buildPreview(inputDraft, catalogs) {
   const raceView = catalogs.races.find((entry) => entry.id === draft.raceId) || race;
   const lunarState = resolveLunarState(draft, race);
   const attributes = resolveAttributes(draft, race);
-  const generalVirtues = resolveGeneralVirtues(draft, race, catalogs.generalVirtues);
+  const generalVirtueBonus = resolveGeneralVirtueBonus(draft, race);
+  const generalVirtues = resolveGeneralVirtues(draft, race, catalogs.generalVirtues, generalVirtueBonus);
   const lunarVirtues = resolveLunarVirtues(draft, race, lunarState, attributes, catalogs.lunarVirtues);
   const dotes = resolveDotes(draft, race, attributes, lunarState, generalVirtues, catalogs.dotes);
   const creationHealth = resolveCreationHealth(draft, race);
@@ -74,6 +76,7 @@ export function buildPreview(inputDraft, catalogs) {
     race,
     lunarState,
     attributes,
+    generalVirtueBonus,
     generalVirtues,
     lunarVirtues,
     dotes,
@@ -83,9 +86,21 @@ export function buildPreview(inputDraft, catalogs) {
 
   return {
     draft: serializeDraft(draft),
-    summary: buildSummary(draft, raceView, lunarState, attributes, generalVirtues, lunarVirtues, dotes, creationHealth, equipment, derived),
+    summary: buildSummary(
+      draft,
+      raceView,
+      lunarState,
+      attributes,
+      generalVirtueBonus,
+      generalVirtues,
+      lunarVirtues,
+      dotes,
+      creationHealth,
+      equipment,
+      derived
+    ),
     validations,
-    hints: buildHints(raceView || race, lunarState, lunarVirtues, equipment, creationHealth)
+    hints: buildHints(raceView || race, lunarState, generalVirtueBonus, lunarVirtues, equipment, creationHealth)
   };
 }
 
@@ -155,6 +170,11 @@ function executeDraftAction(draft, catalogs, action, options) {
       });
     case "roll-creation-health":
       return updateCreationHealthRoll(nextDraft, {
+        reroll: Boolean(action?.reroll),
+        random: options.random
+      });
+    case "roll-general-virtue-bonus":
+      return updateGeneralVirtueBonusRoll(nextDraft, {
         reroll: Boolean(action?.reroll),
         random: options.random
       });
@@ -260,18 +280,61 @@ function resolveAttributes(draft, race) {
   };
 }
 
-function resolveGeneralVirtues(draft, race, catalog) {
+function resolveGeneralVirtueBonus(draft, race) {
+  const die = race?.generalVirtueDie || "";
+  const sides = parseDieSides(die);
+  const storedDie = String(draft.generalVirtueBonus?.die || "").trim().toLowerCase();
+  const rawValue = Number(draft.generalVirtueBonus?.value || 0);
+  const rawInitial = Number(draft.generalVirtueBonus?.initialValue || 0);
+  const rerollsUsed = clampCounter(draft.generalVirtueBonus?.rerollsUsed, GENERAL_VIRTUE_BONUS_REROLL_LIMIT);
+  const errors = [];
+  const dieMismatch = Boolean(storedDie && die && storedDie !== die);
+
+  if (dieMismatch && rawValue > 0) {
+    errors.push("El dado racial de virtudes guardado no coincide con la raza actual.");
+  }
+
+  const value = dieMismatch ? 0 : sanitizeRolledValue(rawValue, sides);
+  const initialValue = dieMismatch ? 0 : sanitizeRolledValue(rawInitial || value, sides);
+
+  if (rawValue > 0 && value !== rawValue) {
+    errors.push("La tirada del dado racial de virtudes quedo fuera del rango permitido y fue normalizada.");
+  }
+
+  return {
+    die,
+    sides,
+    initialValue,
+    value,
+    rerollsUsed,
+    rerollsRemaining: Math.max(0, GENERAL_VIRTUE_BONUS_REROLL_LIMIT - rerollsUsed),
+    rerollsMax: GENERAL_VIRTUE_BONUS_REROLL_LIMIT,
+    hasRolled: value > 0,
+    canRoll: Boolean(race) && value <= 0 && sides > 0,
+    canReroll: Boolean(race) && value > 0 && rerollsUsed < GENERAL_VIRTUE_BONUS_REROLL_LIMIT,
+    isLocked: value > 0 && rerollsUsed >= GENERAL_VIRTUE_BONUS_REROLL_LIMIT,
+    errors
+  };
+}
+
+function resolveGeneralVirtues(draft, race, catalog, generalVirtueBonus) {
   const selected = Object.fromEntries(
     Object.entries(draft.generalVirtues || {}).map(([id, value]) => [id, Number(value || 0)])
   );
   const used = Object.values(selected).reduce((total, value) => total + value, 0);
-  const pool = race ? race.generalVirtuePool : 0;
+  const basePool = race ? race.generalVirtuePool : 0;
+  const bonusPool = generalVirtueBonus?.hasRolled ? generalVirtueBonus.value : 0;
+  const pool = basePool + bonusPool;
   const remaining = pool - used;
   const errors = [];
   const itemsById = new Map();
+  const spentByCategory = Object.fromEntries(catalog.map((group) => [group.id, 0]));
 
   catalog.forEach((group) => {
-    group.items.forEach((item) => itemsById.set(item.id, item));
+    group.items.forEach((item) => {
+      itemsById.set(item.id, item);
+      spentByCategory[group.id] += Number(selected[item.id] || 0);
+    });
   });
 
   Object.entries(selected).forEach(([id, value]) => {
@@ -290,11 +353,24 @@ function resolveGeneralVirtues(draft, race, catalog) {
     errors.push("La asignacion de Tecnica / Erudicion / Dominio excede el pool inicial de la raza.");
   }
 
+  const bonusApplied = Math.max(0, used - basePool);
+  if (bonusApplied > bonusPool) {
+    errors.push("La asignacion excede incluso el bono otorgado por el dado racial de virtudes.");
+  }
+
+  if (generalVirtueBonus?.errors?.length > 0) {
+    errors.push(...generalVirtueBonus.errors);
+  }
+
   return {
+    basePool,
+    bonusPool,
     pool,
     used,
     remaining,
     selected,
+    spentByCategory,
+    bonusApplied,
     errors,
     groups: catalog.map((group) => ({
       ...group,
@@ -667,7 +743,19 @@ function resolveStepValidations({ draft, race, lunarState, attributes, generalVi
   };
 }
 
-function buildSummary(draft, race, lunarState, attributes, generalVirtues, lunarVirtues, dotes, creationHealth, equipment, derived) {
+function buildSummary(
+  draft,
+  race,
+  lunarState,
+  attributes,
+  generalVirtueBonus,
+  generalVirtues,
+  lunarVirtues,
+  dotes,
+  creationHealth,
+  equipment,
+  derived
+) {
   const offensiveOrientation = OFFENSIVE_ORIENTATION_DEFINITIONS.find((entry) => entry.id === draft.offensiveOrientation) || null;
   const defensiveOrientation = DEFENSIVE_ORIENTATION_DEFINITIONS.find((entry) => entry.id === draft.defensiveOrientation) || null;
 
@@ -681,6 +769,7 @@ function buildSummary(draft, race, lunarState, attributes, generalVirtues, lunar
     race,
     lunarState,
     attributes,
+    generalVirtueBonus,
     generalVirtues,
     lunarVirtues,
     dotes,
@@ -693,7 +782,7 @@ function buildSummary(draft, race, lunarState, attributes, generalVirtues, lunar
   };
 }
 
-function buildHints(race, lunarState, lunarVirtues, equipment, creationHealth) {
+function buildHints(race, lunarState, generalVirtueBonus, lunarVirtues, equipment, creationHealth) {
   const hints = [];
 
   if (race) {
@@ -722,6 +811,15 @@ function buildHints(race, lunarState, lunarVirtues, equipment, creationHealth) {
 
   if (!creationHealth.hasRolled && race) {
     hints.push(`La salud final todavia no incluye el dado extra permanente de ${race.healthDie}.`);
+  }
+
+  if (generalVirtueBonus?.category) {
+    const categoryLabel = generalVirtueBonus.category === "tecnica" ? "Tecnica" : "Dominio";
+    if (!generalVirtueBonus.hasRolled) {
+      hints.push(`Puedes lanzar el dado racial de virtudes (${generalVirtueBonus.die || "-"}) para sumar puntos extra en ${categoryLabel}.`);
+    } else {
+      hints.push(`El bono del dado racial de virtudes solo puede gastarse dentro de ${categoryLabel}.`);
+    }
   }
 
   if (lunarVirtues.selectedItems.some((entry) => entry.rootAttribute === "SOC")) {
@@ -1041,6 +1139,38 @@ function updateCreationHealthRoll(draft, { reroll, random }) {
   draft.creationHealth.initialValue = reroll ? current.initialValue || current.value : value;
   draft.creationHealth.value = value;
   draft.creationHealth.rerollsUsed = reroll ? current.rerollsUsed + 1 : 0;
+  return draft;
+}
+
+function updateGeneralVirtueBonusRoll(draft, { reroll, random }) {
+  const race = RACE_BY_ID.get(draft.raceId) || null;
+
+  if (!race) {
+    throw new Error("Selecciona una raza antes de lanzar el dado racial de virtudes.");
+  }
+
+  const sides = parseDieSides(race.generalVirtueDie);
+  if (sides <= 0) {
+    throw new Error("La raza actual no define un dado racial valido para virtudes generales.");
+  }
+
+  const current = resolveGeneralVirtueBonus(draft, race);
+
+  if (reroll) {
+    if (!current.hasRolled) {
+      throw new Error("Primero debes obtener una tirada inicial del dado racial de virtudes.");
+    }
+
+    if (current.rerollsUsed >= GENERAL_VIRTUE_BONUS_REROLL_LIMIT) {
+      throw new Error("Los 2 re-rolls del dado racial de virtudes ya fueron consumidos.");
+    }
+  }
+
+  const value = rollDie(sides, random);
+  draft.generalVirtueBonus.die = race.generalVirtueDie;
+  draft.generalVirtueBonus.initialValue = reroll ? current.initialValue || current.value : value;
+  draft.generalVirtueBonus.value = value;
+  draft.generalVirtueBonus.rerollsUsed = reroll ? current.rerollsUsed + 1 : 0;
   return draft;
 }
 

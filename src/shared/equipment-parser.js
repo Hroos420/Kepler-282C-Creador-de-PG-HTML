@@ -4,32 +4,32 @@ const SECTION_ORDER = [
   {
     id: "melee",
     title: "Armas Cuerpo a Cuerpo (C.C)",
-    anchor: "\nArmas Cuerpo a Cuerpo (C.C)"
+    anchors: ["\nArmas Cuerpo a Cuerpo (C.C)"]
   },
   {
     id: "ranged",
     title: "Armas a Distancia (A.D)",
-    anchor: "\nArmas a Distancia (A.D)"
+    anchors: ["\nArmas a Distancia (A.D)"]
   },
   {
     id: "armor",
     title: "Armaduras",
-    anchor: "\nArmaduras"
+    anchors: ["\nArmaduras"]
   },
   {
     id: "shield",
     title: "Escudos",
-    anchor: "\nEscudos"
+    anchors: ["\nEscudos"]
   },
   {
     id: "focus",
     title: "Baritas y Baculos",
-    anchor: "\nBaritas y Báculos Mágicos o Malditos"
+    anchors: ["\nBaritas y Báculos Mágicos o Malditos", "\nBaritas y BÃ¡culos MÃ¡gicos o Malditos"]
   },
   {
     id: "instrument",
     title: "Instrumentos de Interpretacion",
-    anchor: "\nInstrumentos de Interpretación"
+    anchors: ["\nInstrumentos de Interpretación", "\nInstrumentos de InterpretaciÃ³n"]
   }
 ];
 
@@ -47,9 +47,9 @@ export function parseEquipmentCatalog(rawText) {
 }
 
 function splitSections(rawText) {
-  const matchResults = compact(
-    SECTION_ORDER.map((section) => findSectionBounds(rawText, section))
-  ).sort((left, right) => left.index - right.index);
+  const matchResults = compact(SECTION_ORDER.map((section) => findSectionBounds(rawText, section))).sort(
+    (left, right) => left.index - right.index
+  );
 
   const sections = {};
 
@@ -64,7 +64,7 @@ function splitSections(rawText) {
 }
 
 function findSectionBounds(rawText, section) {
-  const index = rawText.indexOf(section.anchor);
+  const index = resolveAnchorIndex(rawText, section.anchors || []);
   if (index < 0) {
     return null;
   }
@@ -97,20 +97,32 @@ function parseItem(sectionId, blockText) {
     return null;
   }
 
-  const rawType = extractLine(blockText, "Tipo de Arma:") || extractLine(blockText, "Tipo Armadura:") || extractLine(blockText, "Tipo Escudo:");
-  const rarity = extractLine(blockText, "Rareza:");
-  const range = extractLine(blockText, "Alcance:");
-  const attackBonus = numberFromText(extractLine(blockText, "Bonus al Ataque:"));
-  const lunarBonusText =
-    extractLine(blockText, "Bonus MÃ¡gico o Maldito:") || extractLine(blockText, "Bonus al Ataque con Virtud MÃ¡gica o Maldita:");
-  const defensePair = extractLine(blockText, "Bonus a la Resistencia o a la Esquiva:");
-  const damage = extractLine(blockText, "DaÃ±o:");
-  const ability = extractLine(blockText, "Habilidad:");
-  const description = extractLine(blockText, "DescripciÃ³n:");
-  const reduction = numberFromText(extractLine(blockText, "ReducciÃ³n de DaÃ±o:"));
-  const movementPenalty = numberFromText(extractLine(blockText, "Penalizador al Movimiento:"));
+  const rawType = extractAnyLine(blockText, ["Tipo de Arma:", "Tipo Armadura:", "Tipo Escudo:"]);
+  const rarity = extractAnyLine(blockText, ["Rareza:"]);
+  const range = extractAnyLine(blockText, ["Alcance:"]);
+  const attackBonus = numberFromText(extractAnyLine(blockText, ["Bonus al Ataque:"]));
+  const lunarBonusText = extractAnyLine(blockText, [
+    "Bonus Mágico o Maldito:",
+    "Bonus MÃƒÂ¡gico o Maldito:",
+    "Bonus al Ataque con Virtud Mágica o Maldita:",
+    "Bonus al Ataque con Virtud MÃ¡gica o Maldita:",
+    "Bonus al Ataque con Virtud MÃƒÂ¡gica o Maldita:"
+  ]);
+  const defensePair = extractAnyLine(blockText, ["Bonus a la Resistencia o a la Esquiva:", "Bonus a la Resistencia o a la Esquivar:"]);
+  const damage = extractAnyLine(blockText, ["Daño:", "DaÃ±o:", "DaÃƒÂ±o:"]);
+  const ability = extractAnyLine(blockText, ["Habilidad:"]);
+  const description = extractAnyLine(blockText, ["Descripción:", "DescripciÃ³n:", "DescripciÃƒÂ³n:"]);
+  const reduction = numberFromText(
+    extractAnyLine(blockText, ["Reducción de Daño:", "ReducciÃ³n de DaÃ±o:", "ReducciÃƒÂ³n de DaÃƒÂ±o:"])
+  );
+  const movementPenalty = numberFromText(extractAnyLine(blockText, ["Penalizador al Movimiento:"]));
 
-  const lunarAffinity = /Roja/i.test(lunarBonusText) || /\[MALDITA\]/i.test(name) ? "roja" : /Azul/i.test(lunarBonusText) || /\[[^\]]*GICA\]/i.test(name) ? "azul" : "";
+  const lunarAffinity =
+    /Roja/i.test(lunarBonusText) || /\[MALDITA\]/i.test(name)
+      ? "roja"
+      : /Azul/i.test(lunarBonusText) || /\[[^\]]*GICA\]/i.test(name)
+        ? "azul"
+        : "";
   const lunarBonus = numberFromText(lunarBonusText);
   const dodgeBonus = /Esquiva/i.test(defensePair) ? numberFromText(defensePair) : 0;
   const resistanceBonus = /Resistencia/i.test(defensePair) ? numberFromText(defensePair) : 0;
@@ -238,6 +250,28 @@ function buildTags(sectionId, rawType, lunarAffinity, offensiveOrientations, def
   }
 
   return [...new Set(tags)];
+}
+
+function resolveAnchorIndex(rawText, anchors) {
+  for (const anchor of anchors) {
+    const index = rawText.indexOf(anchor);
+    if (index >= 0) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+function extractAnyLine(sourceText, prefixes) {
+  for (const prefix of prefixes) {
+    const value = extractLine(sourceText, prefix);
+    if (value) {
+      return value;
+    }
+  }
+
+  return "";
 }
 
 function resolveOffensiveOrientations(sectionId, lunarBonus) {

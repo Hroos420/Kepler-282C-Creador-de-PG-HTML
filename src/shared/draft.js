@@ -17,6 +17,7 @@ export function createEmptyDraft() {
     lunarChoice: "",
     extraAttribute: "",
     generalVirtues: {},
+    generalVirtueBonus: createEmptyGeneralVirtueBonus(),
     lunarVirtueIds: [],
     selectedDoteIds: [],
     offensiveOrientation: "",
@@ -50,6 +51,7 @@ export function normalizeDraft(input) {
     lunarChoice: String(input.lunarChoice || "").trim(),
     extraAttribute: normalizeAttributeKey(input.extraAttribute),
     generalVirtues: normalizePointMap(input.generalVirtues),
+    generalVirtueBonus: normalizeGeneralVirtueBonus(input.generalVirtueBonus),
     lunarVirtueIds: normalizeStringArray(input.lunarVirtueIds),
     selectedDoteIds: normalizeStringArray(input.selectedDoteIds),
     offensiveOrientation: normalizeOffensiveOrientation(input.offensiveOrientation || input.orientation),
@@ -84,6 +86,7 @@ function normalizeLegacyDraft(legacyRecord) {
     lunarChoice: inferLegacyLunarChoice(raceId, legacyRecord),
     extraAttribute: inferExtraAttribute(race, attrsFinal),
     generalVirtues: normalizePointMap(legacyRecord.virtues),
+    generalVirtueBonus: createEmptyGeneralVirtueBonus(),
     lunarVirtueIds: normalizeStringArray(legacyRecord.lunarVirtues),
     selectedDoteIds: normalizeStringArray(legacyRecord.dotes),
     offensiveOrientation: inferLegacyOrientation(legacyRecord),
@@ -183,12 +186,30 @@ function createEmptyEquipment() {
   };
 }
 
+function createEmptyGeneralVirtueBonus() {
+  return {
+    die: "",
+    initialValue: 0,
+    value: 0,
+    rerollsUsed: 0
+  };
+}
+
 function createEmptyCreationHealth() {
   return {
     die: "",
     initialValue: 0,
     value: 0,
     rerollsUsed: 0
+  };
+}
+
+function normalizeGeneralVirtueBonus(value) {
+  return {
+    die: String(value?.die || "").trim().toLowerCase(),
+    initialValue: normalizeCounter(value?.initialValue),
+    value: normalizeCounter(value?.value),
+    rerollsUsed: normalizeCounter(value?.rerollsUsed)
   };
 }
 

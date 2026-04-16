@@ -25,6 +25,7 @@ function makeBaseDraft(overrides = {}) {
     lunarChoice: "",
     extraAttribute: "FIS",
     generalVirtues: { acrobacias: 3, percepcion: 3, diplomacia: 3, sigilo: 3 },
+    generalVirtueBonus: { category: "", die: "", initialValue: 0, value: 0, rerollsUsed: 0 },
     lunarVirtueIds: ["misil-arcano", "sello-restitucion", "hueso-serrado", "senal-carronero"],
     selectedDoteIds: ["sincronia-manada"],
     offensiveOrientation: "magic",
@@ -141,6 +142,52 @@ test("El filtro ofensivo solo muestra items compatibles con la orientacion elegi
 
   assert.ok(magicPreview.summary.equipment.offensive.pool.every((item) => item.offensiveOrientations.includes("magic")));
   assert.ok(performancePreview.summary.equipment.offensive.pool.every((item) => item.category === "instrument"));
+});
+
+test("El dado racial de virtudes usa el dado definido por la raza y permite hasta 2 re-rolls", () => {
+  const base = makeBaseDraft({
+    generalVirtues: { acrobacias: 3, percepcion: 3, diplomacia: 3, sigilo: 3 },
+    generalVirtueBonus: { die: "", initialValue: 0, value: 0, rerollsUsed: 0 }
+  });
+
+  const first = applyDraftAction(base, catalogs, { type: "roll-general-virtue-bonus" }, { random: () => 0 });
+  assert.equal(first.preview.summary.generalVirtueBonus.die, "d10");
+  assert.equal(first.draft.generalVirtueBonus.value, 1);
+  assert.equal(first.preview.summary.generalVirtues.pool, 13);
+
+  const second = applyDraftAction(first.draft, catalogs, { type: "roll-general-virtue-bonus", reroll: true }, { random: () => 0.5 });
+  const third = applyDraftAction(second.draft, catalogs, { type: "roll-general-virtue-bonus", reroll: true }, { random: () => 0.9 });
+
+  assert.equal(third.draft.generalVirtueBonus.rerollsUsed, 2);
+  assert.equal(third.draft.generalVirtueBonus.value, 10);
+  assert.throws(
+    () => applyDraftAction(third.draft, catalogs, { type: "roll-general-virtue-bonus", reroll: true }, { random: () => 0.2 }),
+    /2 re-rolls/i
+  );
+});
+
+test("El bono del dado racial de virtudes se suma libremente al pool total de Tecnica / Erudicion / Dominio", () => {
+  const validPreview = buildPreview(
+    makeBaseDraft({
+      generalVirtues: { acrobacias: 3, nadar: 3, percepcion: 3, diplomacia: 3, sigilo: 3, interpretar: 1 },
+      generalVirtueBonus: { die: "d10", initialValue: 4, value: 4, rerollsUsed: 0 }
+    }),
+    catalogs
+  );
+  assert.equal(validPreview.summary.generalVirtues.pool, 16);
+  assert.equal(validPreview.summary.generalVirtues.remaining, 0);
+  assert.equal(validPreview.summary.generalVirtues.errors.length, 0);
+
+  const redistributedPreview = buildPreview(
+    makeBaseDraft({
+      generalVirtues: { acrobacias: 3, percepcion: 3, "saber-historia": 3, diplomacia: 3, interpretar: 1, intimidar: 1 },
+      generalVirtueBonus: { die: "d10", initialValue: 2, value: 2, rerollsUsed: 0 }
+    }),
+    catalogs
+  );
+  assert.equal(redistributedPreview.summary.generalVirtues.pool, 14);
+  assert.equal(redistributedPreview.summary.generalVirtues.remaining, 0);
+  assert.equal(redistributedPreview.summary.generalVirtues.errors.length, 0);
 });
 
 test("La randomizacion ofensiva solo usa el pool filtrado y admite un solo re-roll", () => {

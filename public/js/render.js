@@ -426,16 +426,38 @@ function renderExtraPointStep(summary) {
 }
 
 function renderGeneralVirtuesStep(summary) {
+  const bonus = summary.generalVirtueBonus;
   return `
     <div class="step-layout">
       <section class="data-panel">
         <div class="toolbar-line">
-          <div><strong>Pool inicial:</strong> ${summary.generalVirtues.pool}</div>
+          <div><strong>Pool base:</strong> ${summary.generalVirtues.basePool}</div>
+          <div><strong>Bono racial:</strong> ${summary.generalVirtues.bonusPool}</div>
+          <div><strong>Pool total:</strong> ${summary.generalVirtues.pool}</div>
           <div><strong>Usados:</strong> ${summary.generalVirtues.used} &middot; <strong>Restantes:</strong> ${summary.generalVirtues.remaining}</div>
         </div>
         <div class="callout">
           <strong>Cap en creacion:</strong> 3 por virtud.
           <p>El backend bloquea automaticamente cualquier exceso de pool o de cap individual.</p>
+        </div>
+        <div class="summary-block">
+          <div class="toolbar-line">
+            <div><strong>Dado racial:</strong> ${escapeHtml(bonus.die || "-")}</div>
+            <div><strong>Resultado:</strong> ${bonus.value || "-"}</div>
+          </div>
+          <div class="toolbar-line">
+            <div><strong>Re-rolls:</strong> ${bonus.rerollsUsed} / ${bonus.rerollsMax}</div>
+            <div><strong>Restantes:</strong> ${bonus.rerollsRemaining}</div>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-button" data-action="roll-general-virtue-bonus" ${bonus.canRoll ? "" : "disabled"}>Tirar dado racial</button>
+            <button class="ghost-button" data-action="reroll-general-virtue-bonus" ${bonus.canReroll ? "" : "disabled"}>Usar re-roll</button>
+          </div>
+          <div class="help-card">
+            <h4>Como se aplica</h4>
+            <p>El pool base racial de Tecnica / Erudicion / Dominio sigue intacto. Si tiras el dado racial, el resultado se suma al total disponible y se reparte libremente entre las tres virtudes como un conjunto unico.</p>
+          </div>
+          ${renderList(bonus.errors, "Sin incidencias en el dado racial de virtudes.")}
         </div>
       </section>
 
@@ -826,6 +848,7 @@ function renderFinalSummaryStep(state) {
         <p><strong>Armadura final:</strong> ${escapeHtml(summary.equipment.selected.armor.name)}</p>
         <p><strong>Escudo final:</strong> ${escapeHtml(summary.equipment.selected.shield.name)}</p>
         <p><strong>Dado extra de vida:</strong> ${escapeHtml(summary.creationHealth.die || "-")} = ${summary.creationHealth.value || "-"}</p>
+        <p><strong>Dado racial de virtudes:</strong> ${escapeHtml(summary.generalVirtueBonus.die || "-")} ${summary.generalVirtueBonus.value ? `(${summary.generalVirtueBonus.value} a ${summary.generalVirtueBonus.category === "tecnica" ? "Tecnica" : "Dominio"})` : "(sin usar)"}</p>
         <p><strong>Vida maxima final:</strong> ${summary.derived.health}</p>
         <p><strong>Virtudes generales:</strong> ${renderSelectedGeneralVirtues(summary)}</p>
         <p><strong>Virtudes lunares:</strong> ${summary.lunarVirtues.selectedItems.map((item) => escapeHtml(item.name)).join(", ") || "Sin seleccionar"}</p>

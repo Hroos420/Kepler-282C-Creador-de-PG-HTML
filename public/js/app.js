@@ -114,6 +114,12 @@ document.addEventListener("click", async (event) => {
       case "reroll-health":
         await applyServerAction({ type: "roll-creation-health", reroll: true });
         break;
+      case "roll-general-virtue-bonus":
+        await applyServerAction({ type: "roll-general-virtue-bonus" });
+        break;
+      case "reroll-general-virtue-bonus":
+        await applyServerAction({ type: "roll-general-virtue-bonus", reroll: true });
+        break;
       case "save-character":
         await saveCharacter();
         break;
@@ -518,6 +524,13 @@ function createDraft() {
     lunarChoice: "",
     extraAttribute: "",
     generalVirtues: {},
+    generalVirtueBonus: {
+      category: "",
+      die: "",
+      initialValue: 0,
+      value: 0,
+      rerollsUsed: 0
+    },
     lunarVirtueIds: [],
     selectedDoteIds: [],
     offensiveOrientation: "",

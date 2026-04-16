@@ -116,6 +116,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 15,
     movementBase: 13,
     generalVirtuePool: 12,
+    generalVirtueDie: "d10",
     lunarVirtueLimit: 4,
     healthDie: "d8",
     notes: [
@@ -148,6 +149,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 17,
     movementBase: 14,
     generalVirtuePool: 10,
+    generalVirtueDie: "d8",
     lunarVirtueLimit: 3,
     healthDie: "d10",
     notes: [
@@ -169,6 +171,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 14,
     movementBase: 15,
     generalVirtuePool: 11,
+    generalVirtueDie: "d10",
     lunarVirtueLimit: 2,
     healthDie: "d8",
     notes: [
@@ -190,6 +193,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 10,
     movementBase: 17,
     generalVirtuePool: 12,
+    generalVirtueDie: "d12",
     lunarVirtueLimit: 4,
     healthDie: "d6",
     notes: [
@@ -211,6 +215,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 20,
     movementBase: 10,
     generalVirtuePool: 11,
+    generalVirtueDie: "d10",
     lunarVirtueLimit: 2,
     healthDie: "d12",
     notes: [
@@ -243,6 +248,7 @@ export const RACE_DEFINITIONS = [
     healthBase: 18,
     movementBase: 11,
     generalVirtuePool: 9,
+    generalVirtueDie: "d8",
     lunarVirtueLimit: 3,
     healthDie: "d10",
     notes: [

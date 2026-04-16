@@ -41,6 +41,7 @@ node --test
 2. Resuelve la configuracion racial y lunar.
 3. Asigna el punto extra solo a Fisico, Destreza, Social o Mental.
 4. Reparte el pool inicial de Tecnica / Erudicion / Dominio con cap 3 por virtud.
+   Puedes elegir Tecnica o Dominio como destino para tirar 1 dado racial de virtudes y sumar ese resultado al pool total, con hasta 2 re-rolls. El exceso sobre el pool base solo puede quedar dentro de la categoria elegida.
 5. Elige virtudes lunares validas segun raza y senda.
 6. Selecciona el dote libre valido y revisa el estado del slot racial.
 7. Elige orientacion ofensiva principal.
@@ -72,3 +73,5 @@ node --test
 - dado extra de vida racial y salud final
 - guardado y carga desde SQLite
 - carga de imagenes locales y resumenes raciales derivados del lore
+- alineacion canonica de equipo, virtudes lunares y dotes de nivel 1
+- dado racial opcional para el reparto de virtudes generales y su restriccion a Tecnica/Dominio
