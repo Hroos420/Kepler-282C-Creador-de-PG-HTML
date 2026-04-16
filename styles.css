@@ -177,8 +177,8 @@ main{padding: 10px 20px 40px; max-width: 1400px; margin: 0 auto;}
 
 /* Imágenes responsivas y tamaño consistente para tarjetas de raza */
 img{ max-width:100%; height:auto; display:block; }
-.race-art{ width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:10px; background:var(--bg); border:1px solid var(--border-local, var(--border)); margin:0; }
-.race-art img{ width:100%; height:100%; object-fit:contain; }
+.race-art{ width:100%; min-height:280px; overflow:hidden; border-radius:10px; background:var(--bg); border:1px solid var(--border-local, var(--border)); margin:0; display:flex; align-items:center; justify-content:center; }
+.race-art img{ max-width:100%; height:auto; object-fit:contain; object-position:center; }
 .race-name{
   margin:0;
   font-size: 1.15rem;
