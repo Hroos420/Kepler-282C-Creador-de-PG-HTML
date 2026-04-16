@@ -116,7 +116,7 @@ main{padding: 10px 20px 40px; max-width: 1400px; margin: 0 auto;}
   margin-top: 20px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 1fr;
+  grid-auto-rows: auto;
   gap: 16px;
 }
 /* Atributos grid: 2 columnas por legibilidad */
@@ -160,7 +160,7 @@ main{padding: 10px 20px 40px; max-width: 1400px; margin: 0 auto;}
   cursor: pointer;
   transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
   overflow: hidden;
-  height: 100%;
+  height: auto;
 }
 .race-card:hover{
   transform: translateY(-2px);
