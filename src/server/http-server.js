@@ -7,6 +7,7 @@ import { loadCatalogs } from "./catalog-loader.js";
 import { CharacterRepository } from "./repository.js";
 import { applyDraftAction, buildPreview } from "./rules-engine.js";
 import { normalizeDraft } from "../shared/draft.js";
+import { exportCharacterToWord } from "./character-exporter.js";
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -178,6 +179,50 @@ async function handleApiRequest(request, response, requestUrl, repository, catal
   if (request.method === "DELETE" && pathname === "/api/autosave") {
     repository.deleteAutosave();
     respondJson(response, 200, { ok: true });
+    return;
+  }
+
+  if (request.method === "GET" && /^\/api\/characters\/[^/]+\/export$/.test(pathname)) {
+    const id = pathname.split("/")[3];
+    const character = repository.getCharacter(id);
+    if (!character) {
+      respondJson(response, 404, { error: "not_found", message: "Personaje no encontrado." });
+      return;
+    }
+
+    try {
+      const preview = buildPreview(character.draft, catalogs);
+      const filename = `${character.draft.name || "personaje"}_Kepler282C.docx`;
+      const tempPath = path.join(process.cwd(), "temp", filename);
+      const tempDir = path.dirname(tempPath);
+
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      await exportCharacterToWord(character.draft, preview, tempPath);
+
+      response.writeHead(200, {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(filename)}"`,
+        "Content-Length": fs.statSync(tempPath).size
+      });
+
+      fs.createReadStream(tempPath).pipe(response);
+
+      setTimeout(() => {
+        try {
+          fs.unlinkSync(tempPath);
+        } catch {
+          // Ignorar errores al limpiar
+        }
+      }, 1000);
+    } catch (error) {
+      respondJson(response, 500, {
+        error: "export_error",
+        message: error instanceof Error ? error.message : "Error al exportar el personaje."
+      });
+    }
     return;
   }
 

@@ -466,11 +466,14 @@ async function deleteCharacter(id) {
 }
 
 async function exportSavedCharacter(id) {
-  const character = await api.getCharacter(id);
-  downloadJson(`${character.name || "personaje"}.json`, {
-    exportedAt: new Date().toISOString(),
-    character
-  });
+  const downloadUrl = api.exportCharacterToWord(id);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = `personaje_kepler282c.docx`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  flash("success", "Personaje exportado a Word.");
 }
 
 function exportCurrentDraft() {

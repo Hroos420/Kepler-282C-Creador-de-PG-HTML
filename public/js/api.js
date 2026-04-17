@@ -69,6 +69,9 @@ export const api = {
       body: JSON.stringify({ draft })
     });
   },
+  exportCharacterToWord(id) {
+    return `/api/characters/${id}/export`;
+  },
   saveAutosave(draft) {
     return request("/api/autosave", {
       method: "PUT",
